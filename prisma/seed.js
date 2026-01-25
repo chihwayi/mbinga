@@ -1,20 +1,8 @@
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  tagline: string;
-  description: string;
-  story: string;
-  category: "Men" | "Women" | "Unisex";
-  price: number;
-  stock: number;
-  notes: string[];
-  ingredients: string[];
-  image: string;
-  accentColor: string;
-}
+import { PrismaClient } from '@prisma/client'
 
-export const products: Product[] = [
+const prisma = new PrismaClient()
+
+const products = [
   {
     id: "1",
     name: "Ngwéré Oud",
@@ -25,8 +13,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 150,
     stock: 15,
-    notes: ["Agarwood", "Rosewood", "Sandalwood", "Amber"],
-    ingredients: ["Agarwood", "Rosewood", "Sandalwood", "Amber"],
+    notes: "Agarwood, Rosewood, Sandalwood, Amber",
+    ingredients: "Agarwood, Rosewood, Sandalwood, Amber",
     image: "/images/ngwere-oud.jpg",
     accentColor: "#3d2817"
   },
@@ -40,8 +28,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 165,
     stock: 8,
-    notes: ["Agarwood", "Saffron", "Rose", "Birch", "Amber"],
-    ingredients: ["Agarwood", "Saffron", "Rose", "Birch", "Amber"],
+    notes: "Agarwood, Saffron, Rose, Birch, Amber",
+    ingredients: "Agarwood, Saffron, Rose, Birch, Amber",
     image: "/images/manyama-oud.jpg",
     accentColor: "#4a1a4a"
   },
@@ -55,8 +43,8 @@ export const products: Product[] = [
     category: "Men",
     price: 145,
     stock: 20,
-    notes: ["French Jasmine", "Black Truffle", "Ylang-ylang"],
-    ingredients: ["French Jasmine", "Black Truffle", "Ylang-ylang"],
+    notes: "French Jasmine, Black Truffle, Ylang-ylang",
+    ingredients: "French Jasmine, Black Truffle, Ylang-ylang",
     image: "/images/gafa-intense.jpg",
     accentColor: "#1a1a2d"
   },
@@ -70,8 +58,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 140,
     stock: 12,
-    notes: ["Tobacco Leaf", "Spicy Notes", "Pink Pepper"],
-    ingredients: ["Tobacco Leaf", "Spicy Notes", "Pink Pepper"],
+    notes: "Tobacco Leaf, Spicy Notes, Pink Pepper",
+    ingredients: "Tobacco Leaf, Spicy Notes, Pink Pepper",
     image: "/images/shungu.jpg",
     accentColor: "#3d1a1a"
   },
@@ -85,8 +73,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 155,
     stock: 10,
-    notes: ["Apple", "Citrus Fruits", "Bergamot"],
-    ingredients: ["Apple", "Citrus Fruits", "Bergamot"],
+    notes: "Apple, Citrus Fruits, Bergamot",
+    ingredients: "Apple, Citrus Fruits, Bergamot",
     image: "/images/goridhe.jpg",
     accentColor: "#D4AF37"
   },
@@ -100,8 +88,8 @@ export const products: Product[] = [
     category: "Men",
     price: 160,
     stock: 5,
-    notes: ["Saffron", "Jasmine", "Ambergris", "Cedarwood"],
-    ingredients: ["Saffron", "Jasmine", "Ambergris", "Cedarwood"],
+    notes: "Saffron, Jasmine, Ambergris, Cedarwood",
+    ingredients: "Saffron, Jasmine, Ambergris, Cedarwood",
     image: "/images/maboss.jpg",
     accentColor: "#2A2A2A"
   },
@@ -115,8 +103,8 @@ export const products: Product[] = [
     category: "Women",
     price: 135,
     stock: 25,
-    notes: ["Raspberry", "Rose", "Pink Pepper"],
-    ingredients: ["Raspberry", "Rose", "Pink Pepper"],
+    notes: "Raspberry, Rose, Pink Pepper",
+    ingredients: "Raspberry, Rose, Pink Pepper",
     image: "/images/dadiso.jpg",
     accentColor: "#B565A7"
   },
@@ -130,8 +118,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 130,
     stock: 18,
-    notes: ["Bergamot", "Grapefruit", "Rosemary"],
-    ingredients: ["Bergamot", "Grapefruit", "Rosemary"],
+    notes: "Bergamot, Grapefruit, Rosemary",
+    ingredients: "Bergamot, Grapefruit, Rosemary",
     image: "/images/uzoba-lit.jpg",
     accentColor: "#E25822"
   },
@@ -145,8 +133,8 @@ export const products: Product[] = [
     category: "Unisex",
     price: 170,
     stock: 0,
-    notes: ["Saffron", "Bergamot", "Spicy Accords"],
-    ingredients: ["Saffron", "Bergamot", "Spicy Accords"],
+    notes: "Saffron, Bergamot, Spicy Accords",
+    ingredients: "Saffron, Bergamot, Spicy Accords",
     image: "/images/dna-oud.jpg",
     accentColor: "#2F4F4F"
   },
@@ -160,9 +148,71 @@ export const products: Product[] = [
     category: "Women",
     price: 145,
     stock: 3,
-    notes: ["Bergamot", "Orange", "Green Notes"],
-    ingredients: ["Bergamot", "Orange", "Green Notes"],
+    notes: "Bergamot, Orange, Green Notes",
+    ingredients: "Bergamot, Orange, Green Notes",
     image: "/images/goldess.jpg",
     accentColor: "#FFD700"
   }
-];
+]
+
+const orders = [
+  {
+    id: "ORD-001",
+    customer: "Farai Munetsi",
+    phone: "+263 77 123 4567",
+    items: "Mbinga Noir (x1)",
+    amount: 120,
+    status: "Pending",
+    date: new Date(new Date().setMinutes(new Date().getMinutes() - 2)), // 2 mins ago
+  },
+  {
+    id: "ORD-002",
+    customer: "Sarah Johnson",
+    phone: "+263 71 987 6543",
+    items: "Golden Savanna (x2)",
+    amount: 290,
+    status: "Paid",
+    date: new Date(new Date().setHours(new Date().getHours() - 1)), // 1 hour ago
+  },
+  {
+    id: "ORD-003",
+    customer: "Tafadzwa K.",
+    phone: "+263 77 222 3333",
+    items: "Royal Zambezi (x1)",
+    amount: 145,
+    status: "Shipped",
+    date: new Date(new Date().setHours(new Date().getHours() - 3)), // 3 hours ago
+  }
+]
+
+async function main() {
+  console.log('Start seeding ...')
+  for (const p of products) {
+    const product = await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: {},
+      create: p,
+    })
+    console.log(`Created product with id: ${product.id}`)
+  }
+
+  for (const o of orders) {
+    const order = await prisma.order.upsert({
+      where: { id: o.id },
+      update: {},
+      create: o,
+    })
+    console.log(`Created order with id: ${order.id}`)
+  }
+  console.log('Seeding finished.')
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

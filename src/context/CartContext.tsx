@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, products } from "@/data/products";
+import { Product } from "@/types";
 
 export interface CartItem {
   product: Product;
@@ -11,7 +11,7 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   isCartOpen: boolean;
-  addToCart: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   toggleCart: () => void;
@@ -25,30 +25,32 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem("mbinga-cart");
     if (savedCart) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCart(JSON.parse(savedCart));
       } catch (e) {
         console.error("Failed to parse cart", e);
       }
     }
+    setIsInitialized(true);
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("mbinga-cart", JSON.stringify(cart));
-  }, [cart]);
+    if (isInitialized) {
+      localStorage.setItem("mbinga-cart", JSON.stringify(cart));
+    }
+  }, [cart, isInitialized]);
 
   const toggleCart = () => setIsCartOpen((prev) => !prev);
 
-  const addToCart = (productId: string, quantity: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (!product) return;
-
+  const addToCart = (product: Product, quantity: number) => {
     // Check stock
     if (quantity > product.stock) {
       alert(`Sorry, only ${product.stock} items left in stock.`);
@@ -56,7 +58,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
 
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product.id === productId);
+      const existingItem = prevCart.find((item) => item.product.id === product.id);
 
       if (existingItem) {
         // Check if adding more exceeds stock
@@ -65,7 +67,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           return prevCart;
         }
         return prevCart.map((item) =>
-          item.product.id === productId
+          item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -83,24 +85,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (!product) return;
+    setCart((prevCart) => {
+      const item = prevCart.find((item) => item.product.id === productId);
+      if (!item) return prevCart;
+      
+      const product = item.product;
 
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
+      if (quantity <= 0) {
+        return prevCart.filter((i) => i.product.id !== productId);
+      }
 
-    if (quantity > product.stock) {
-      alert(`Sorry, only ${product.stock} items left in stock.`);
-      return;
-    }
+      if (quantity > product.stock) {
+        alert(`Sorry, only ${product.stock} items left in stock.`);
+        return prevCart;
+      }
 
-    setCart((prevCart) =>
-      prevCart.map((item) =>
+      return prevCart.map((item) =>
         item.product.id === productId ? { ...item, quantity } : item
-      )
-    );
+      );
+    });
   };
 
   const clearCart = () => {

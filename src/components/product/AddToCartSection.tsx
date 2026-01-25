@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/data/products";
+import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import clsx from "clsx";
@@ -25,7 +25,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
 
   const handleAddToCart = () => {
     if (!isOutOfStock) {
-      addToCart(product.id, quantity);
+      addToCart(product, quantity);
       setQuantity(1); // Reset to 1 after adding
     }
   };

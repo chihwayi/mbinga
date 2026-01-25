@@ -1,3 +1,4 @@
+import prisma from "@/lib/db";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Cursor from "@/components/ui/Cursor";
@@ -8,14 +9,23 @@ import Story from "@/components/home/Story";
 import Journal from "@/components/home/Journal";
 import Contact from "@/components/home/Contact";
 
-export default function Home() {
+export default async function Home() {
+  const products = await prisma.product.findMany();
+  
+  // Transform for frontend
+  const formattedProducts = products.map(p => ({
+    ...p,
+    notes: p.notes.split(", "),
+    ingredients: p.ingredients.split(", ")
+  }));
+
   return (
     <main className="min-h-screen bg-obsidian text-cream selection:bg-gold selection:text-obsidian">
       <Cursor />
       <Navbar />
       <Hero />
       <BrandEssence />
-      <Collection />
+      <Collection products={formattedProducts} />
       <Story />
       <Journal />
       <Contact />

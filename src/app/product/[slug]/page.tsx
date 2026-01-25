@@ -1,4 +1,4 @@
-import { products } from "@/data/products";
+import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -7,7 +7,8 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import AddToCartSection from "@/components/product/AddToCartSection";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany();
   return products.map((product) => ({
     slug: product.slug,
   }));
@@ -15,11 +16,17 @@ export function generateStaticParams() {
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await prisma.product.findUnique({
+    where: { slug },
+  });
 
   if (!product) {
     notFound();
   }
+
+  // Parse notes and ingredients from string to array
+  const notes = product.notes.split(", ");
+  const ingredients = product.ingredients.split(", ");
 
   return (
     <main className="min-h-screen bg-obsidian text-cream selection:bg-gold selection:text-obsidian">
@@ -76,7 +83,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <div>
                     <h4 className="text-xs uppercase tracking-widest text-gold mb-4">Olfactory Notes</h4>
                     <ul className="space-y-2">
-                        {product.notes.map(note => (
+                        {notes.map(note => (
                             <li key={note} className="text-cream/80 font-light flex items-center gap-2">
                                 <span className="w-1 h-1 bg-gold rounded-full" /> {note}
                             </li>
@@ -86,12 +93,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <div>
                     <h4 className="text-xs uppercase tracking-widest text-gold mb-4">Ingredients</h4>
                     <p className="text-cream/60 text-sm leading-relaxed">
-                        {product.ingredients.join(", ")}
+                        {ingredients.join(", ")}
                     </p>
                 </div>
             </div>
 
-            <AddToCartSection product={product} />
+            <AddToCartSection product={{
+                ...product,
+                notes: notes,
+                ingredients: ingredients,
+                category: product.category as "Men" | "Women" | "Unisex"
+            }} />
         </div>
       </div>
       <Footer />

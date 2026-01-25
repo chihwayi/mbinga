@@ -2,10 +2,21 @@
 
 import { useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useAnimation, useMotionValue } from "framer-motion";
-import { products } from "@/data/products";
 
-export default function Collection() {
+interface Product {
+    id: string;
+    name: string;
+    slug: string;
+    tagline: string;
+    accentColor: string;
+    category: string;
+    notes: string[];
+    image: string;
+}
+
+export default function Collection({ products }: { products: Product[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
   const controls = useAnimation();
@@ -86,13 +97,25 @@ export default function Collection() {
         {[...products, ...products].map((product, index) => (
           <Link key={`${product.id}-${index}`} href={`/product/${product.slug}`} className="block group flex-shrink-0">
             <motion.div
-              className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)]"
+              className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
             >
+              {/* Product Image */}
+              {product.image && (
+                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                    <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover opacity-60 grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
+                    />
+                </div>
+              )}
+
               {/* Background with accent color gradient */}
               <div 
-                className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+                className="absolute inset-0 transition-transform duration-700 group-hover:scale-110 mix-blend-soft-light"
                 style={{ 
-                    background: `linear-gradient(135deg, ${product.accentColor}40, #0A0A0A)` 
+                    background: `linear-gradient(135deg, ${product.accentColor}, transparent)` 
                 }}
               />
               
