@@ -12,7 +12,7 @@ function LoginButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full bg-gold text-obsidian font-medium py-4 rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2 uppercase tracking-widest text-sm disabled:opacity-50"
+      className="w-full bg-obsidian border border-gold text-gold font-medium py-4 rounded-lg hover:bg-gold hover:text-obsidian transition-colors flex items-center justify-center gap-2 uppercase tracking-widest text-sm disabled:opacity-50"
     >
       {pending ? "Authenticating..." : "Enter Portal"}
       {!pending && <ArrowRight size={16} />}

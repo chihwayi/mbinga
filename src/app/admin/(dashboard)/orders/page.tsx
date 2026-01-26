@@ -128,7 +128,7 @@ export default function AdminOrders() {
                     </div>
                     <div className="md:col-span-2 flex justify-end gap-4 pt-4">
                         <button type="button" onClick={() => setIsRecording(false)} className="px-6 py-3 text-white/60 hover:text-white transition-colors">Cancel</button>
-                        <button type="submit" className="px-8 py-3 bg-gold text-obsidian font-bold rounded-lg hover:bg-white transition-colors">Save Order</button>
+                        <button type="submit" className="px-8 py-3 bg-obsidian border border-gold text-gold font-bold rounded-lg hover:bg-gold hover:text-obsidian transition-colors">Save Order</button>
                     </div>
                 </form>
             </motion.div>

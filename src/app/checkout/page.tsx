@@ -118,7 +118,7 @@ export default function CheckoutPage() {
                     <button 
                         disabled={isSubmitting}
                         type="submit" 
-                        className="w-full bg-gold text-obsidian font-bold py-4 rounded-lg hover:bg-white transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full bg-obsidian text-gold border border-gold font-bold py-4 uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {isSubmitting ? (
                             "Processing..."

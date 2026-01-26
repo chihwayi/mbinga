@@ -18,7 +18,7 @@ export default async function AdminProducts() {
         </div>
         <Link 
             href="/admin/products/new"
-            className="bg-gold text-obsidian px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-white transition-colors"
+            className="bg-obsidian border border-gold text-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gold hover:text-obsidian transition-colors"
         >
           <Plus size={18} />
           Add Product

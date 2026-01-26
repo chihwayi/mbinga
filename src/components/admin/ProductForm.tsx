@@ -14,7 +14,7 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="bg-gold text-obsidian px-8 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-white transition-colors disabled:opacity-50"
+      className="bg-obsidian border border-gold text-gold px-8 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gold hover:text-obsidian transition-colors disabled:opacity-50"
     >
       <Save size={18} />
       {pending ? "Saving..." : isEditing ? "Update Product" : "Create Product"}

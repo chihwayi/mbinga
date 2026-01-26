@@ -116,11 +116,11 @@ export default function Collection({ products }: { products: Product[] }) {
                 </div>
               )}
 
-              {/* Background with accent color gradient */}
+              {/* Background with accent color gradient - Using Gold for brand consistency */}
               <div 
                 className="absolute inset-0 transition-transform duration-700 group-hover:scale-110 mix-blend-soft-light"
                 style={{ 
-                    background: `linear-gradient(135deg, ${product.accentColor}, transparent)` 
+                    background: `linear-gradient(135deg, var(--color-gold), transparent)` 
                 }}
               />
               
