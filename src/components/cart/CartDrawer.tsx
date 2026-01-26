@@ -52,7 +52,7 @@ export default function CartDrawer() {
                   </p>
                   <button
                     onClick={toggleCart}
-                    className="mt-6 px-8 py-3 bg-gold text-obsidian font-bold tracking-wider hover:bg-white transition-all duration-300"
+                    className="mt-6 px-8 py-3 bg-obsidian border border-gold text-gold font-bold tracking-wider hover:bg-gold hover:text-obsidian transition-all duration-300"
                   >
                     START SHOPPING
                   </button>
@@ -137,7 +137,7 @@ export default function CartDrawer() {
                 <Link 
                   href="/checkout"
                   onClick={toggleCart}
-                  className="w-full py-4 bg-gold text-obsidian font-bold tracking-[0.2em] hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 group"
+                  className="w-full py-4 bg-obsidian border border-gold text-gold font-bold tracking-[0.2em] hover:bg-gold hover:text-obsidian transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                   CHECKOUT
                   <span className="group-hover:translate-x-1 transition-transform">→</span>

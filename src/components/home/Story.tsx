@@ -23,7 +23,7 @@ export default function Story() {
             Our master perfumers source rare ingredients from across the continent, weaving them into compositions that honor our roots while defining modern luxury. From the woody depths of Ngwéré Oud to the vibrant energy of Uzoba Lit, every fragrance is an invitation to discover your olfactory signature.
           </p>
           
-          <Link href="/about" className="inline-block px-8 py-4 border border-gold text-gold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300">
+          <Link href="/about" className="inline-block px-8 py-4 bg-obsidian border border-gold text-gold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300">
             Discover Our Heritage
           </Link>
         </motion.div>
