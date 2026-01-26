@@ -71,7 +71,7 @@ export default function Contact() {
                 className="w-full bg-transparent border-b border-white/20 py-4 text-cream placeholder:text-white/20 focus:outline-none focus:border-gold transition-colors"
               />
             </div>
-            <button className="w-full py-4 bg-gold text-obsidian uppercase tracking-widest font-semibold hover:bg-white transition-colors duration-300">
+            <button className="w-full py-4 bg-obsidian text-gold border border-gold uppercase tracking-widest font-semibold hover:bg-gold hover:text-obsidian transition-colors duration-300">
               Subscribe
             </button>
           </form>

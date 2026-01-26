@@ -46,7 +46,7 @@ export default function Footer() {
               placeholder="Your email"
               className="flex-1 bg-warm-grey border border-gold/30 p-3 text-cream text-sm focus:outline-none focus:border-gold"
             />
-            <button className="bg-gold text-obsidian px-6 py-3 font-semibold text-xs uppercase tracking-wider hover:bg-amethyst hover:text-gold transition-colors">
+            <button className="bg-obsidian text-gold border border-gold px-6 py-3 font-semibold text-xs uppercase tracking-wider hover:bg-gold hover:text-obsidian transition-colors">
               Join
             </button>
           </div>

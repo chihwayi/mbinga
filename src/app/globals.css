@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-obsidian: #0A0A0A;
+  --color-obsidian: #0E0E0E;
   --color-amethyst: #6B2D6B;
   --color-amethyst-dark: #4A1A4A;
   --color-gold: #D4AF37;
   --color-gold-light: #C9A961;
   --color-cream: #F5F3EF;
-  --color-warm-grey: #2A2A2A;
+  --color-warm-grey: #141414;
 
   --font-serif: var(--font-cormorant), serif;
   --font-sans: var(--font-inter), sans-serif;
