@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -19,15 +20,21 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 text-center px-4">
-        <motion.h1
+      <div className="relative z-10 text-center px-4 flex flex-col items-center">
+        <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className="font-serif text-6xl md:text-9xl font-light tracking-[0.2em] mb-4 bg-gradient-to-br from-cream to-gold bg-clip-text text-transparent"
+          className="relative w-[280px] h-[100px] md:w-[600px] md:h-[200px] mb-8"
         >
-          MBINGA
-        </motion.h1>
+          <Image
+            src="/images/logo.png"
+            alt="MBINGA"
+            fill
+            className="object-contain"
+            priority
+          />
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}
