@@ -1,32 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Search, Filter, ChevronDown, Check, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Filter, ChevronDown, Check, X, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getOrders, createOrder, updateOrderStatus, deleteOrder } from "@/actions/orders";
+
+type Order = {
+  id: string;
+  customer: string;
+  email?: string;
+  phone: string;
+  address?: string;
+  items: string;
+  amount: number;
+  status: string;
+  date: Date;
+};
 
 export default function AdminOrders() {
   const [isRecording, setIsRecording] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock Orders
-  const [orders, setOrders] = useState([
-    { id: "ORD-001", customer: "Farai Munetsi", phone: "+263 77 123 4567", items: "Mbinga Noir", amount: 120, status: "Pending", date: "2025-10-24" },
-    { id: "ORD-002", customer: "Sarah Johnson", phone: "+263 71 987 6543", items: "Golden Savanna (x2)", amount: 290, status: "Paid", date: "2025-10-24" },
-  ]);
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function loadOrders() {
+    const result = await getOrders();
+    if (result.success && result.orders) {
+      setOrders(result.orders as Order[]);
+    }
+    setIsLoading(false);
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simulate adding order
+    const formData = new FormData(e.currentTarget);
+    
     const newOrder = {
-        id: `ORD-00${orders.length + 1}`,
-        customer: "New Customer",
-        phone: "+263...",
-        items: "Pending Items",
-        amount: 0,
-        status: "Pending",
-        date: new Date().toISOString().split('T')[0]
+      customer: formData.get("customer") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      address: formData.get("address") as string,
+      items: formData.get("items") as string,
+      amount: parseFloat(formData.get("amount") as string),
     };
-    setOrders([newOrder, ...orders]);
-    setIsRecording(false);
+
+    const result = await createOrder(newOrder);
+    if (result.success) {
+      setIsRecording(false);
+      loadOrders();
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    await updateOrderStatus(id, newStatus);
+    loadOrders();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this order?")) {
+        await deleteOrder(id);
+        loadOrders();
+    }
   };
 
   return (
@@ -61,27 +98,33 @@ export default function AdminOrders() {
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Customer Name</label>
-                        <input type="text" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. John Doe" />
+                        <input name="customer" required type="text" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. John Doe" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Phone Number</label>
-                        <input type="text" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. +263 77..." />
+                        <input name="phone" required type="text" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. +263 77..." />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-widest text-white/40">Email Address</label>
+                        <input name="email" type="email" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. email@example.com" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-widest text-white/40">Delivery Address</label>
+                        <input name="address" type="text" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="e.g. 123 Main St, Harare" />
                     </div>
                     <div className="md:col-span-2 space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Order Details (Items)</label>
-                        <textarea className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none h-24" placeholder="Paste order details from WhatsApp..." />
+                        <textarea name="items" required className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none h-24" placeholder="Paste order details from WhatsApp..." />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Total Amount ($)</label>
-                        <input type="number" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="0.00" />
+                        <input name="amount" required type="number" step="0.01" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none" placeholder="0.00" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Status</label>
-                        <select className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gold/50 outline-none">
-                            <option>Pending Payment</option>
-                            <option>Paid</option>
-                            <option>Shipped</option>
-                        </select>
+                        <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white/50">
+                            Pending (Default)
+                        </div>
                     </div>
                     <div className="md:col-span-2 flex justify-end gap-4 pt-4">
                         <button type="button" onClick={() => setIsRecording(false)} className="px-6 py-3 text-white/60 hover:text-white transition-colors">Cancel</button>
@@ -103,34 +146,59 @@ export default function AdminOrders() {
                 <th className="p-6 font-medium">Total</th>
                 <th className="p-6 font-medium">Status</th>
                 <th className="p-6 font-medium">Date</th>
-                <th className="p-6 font-medium text-right">Actions</th>
+                <th className="p-6 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {orders.map((order) => (
-                <tr key={order.id} className="hover:bg-white/5 transition-colors">
-                  <td className="p-6 font-medium text-white">{order.id}</td>
-                  <td className="p-6">
-                    <div className="text-white">{order.customer}</div>
-                    <div className="text-white/40 text-xs">{order.phone}</div>
-                  </td>
-                  <td className="p-6 text-white/60">{order.items}</td>
-                  <td className="p-6 text-gold font-serif">${order.amount}</td>
-                  <td className="p-6">
-                    <span className={`px-2 py-1 rounded text-[10px] uppercase tracking-wide font-medium ${
-                        order.status === 'Paid' ? 'bg-emerald-400/10 text-emerald-400' :
-                        order.status === 'Pending' ? 'bg-amber-400/10 text-amber-400' :
-                        'bg-blue-400/10 text-blue-400'
-                    }`}>
-                        {order.status}
-                    </span>
-                  </td>
-                  <td className="p-6 text-white/40">{order.date}</td>
-                  <td className="p-6 text-right">
-                    <button className="text-gold hover:text-white text-xs uppercase tracking-wider font-medium">Edit</button>
-                  </td>
-                </tr>
-              ))}
+              {isLoading ? (
+                  <tr>
+                      <td colSpan={7} className="p-6 text-center text-white/40">Loading orders...</td>
+                  </tr>
+              ) : orders.length === 0 ? (
+                  <tr>
+                      <td colSpan={7} className="p-6 text-center text-white/40">No orders found.</td>
+                  </tr>
+              ) : (
+                  orders.map((order) => (
+                    <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-6 font-medium text-white">{order.id}</td>
+                      <td className="p-6">
+                        <div className="text-white/80">{order.customer}</div>
+                        <div className="text-white/40 text-xs">{order.phone}</div>
+                        {order.email && <div className="text-white/40 text-xs">{order.email}</div>}
+                        {order.address && <div className="text-white/30 text-[10px] mt-1 truncate max-w-[150px]" title={order.address}>{order.address}</div>}
+                      </td>
+                      <td className="p-6 text-white/60 max-w-xs truncate" title={order.items}>{order.items}</td>
+                      <td className="p-6 text-gold font-medium">${order.amount}</td>
+                      <td className="p-6">
+                        <select 
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            className={`bg-transparent border-none outline-none cursor-pointer text-xs font-medium uppercase tracking-wide ${
+                                order.status === 'Paid' ? 'text-emerald-400' :
+                                order.status === 'Pending' ? 'text-amber-400' :
+                                'text-blue-400'
+                            }`}
+                        >
+                            <option value="Pending" className="bg-obsidian text-amber-400">Pending</option>
+                            <option value="Paid" className="bg-obsidian text-emerald-400">Paid</option>
+                            <option value="Shipped" className="bg-obsidian text-blue-400">Shipped</option>
+                        </select>
+                      </td>
+                      <td className="p-6 text-white/40">
+                        {new Date(order.date).toLocaleDateString()}
+                      </td>
+                      <td className="p-6">
+                        <button 
+                            onClick={() => handleDelete(order.id)}
+                            className="text-white/20 hover:text-red-400 transition-colors"
+                        >
+                            <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>

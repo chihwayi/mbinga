@@ -1,8 +1,12 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { randomUUID } from "crypto";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function uploadImage(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
@@ -11,26 +15,28 @@ export async function uploadImage(formData: FormData): Promise<{ success: boolea
       return { success: false, error: "No file provided" };
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Ensure upload directory exists
-    const uploadDir = join(process.cwd(), "public/uploads");
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // Ignore if exists
+    // If Cloudinary credentials are not set, fall back to local storage (or fail gracefully)
+    // But for this task, we assume the user wants Cloudinary.
+    if (!process.env.CLOUDINARY_API_SECRET) {
+        console.warn("Cloudinary env vars missing, falling back to local file system is not implemented in this version to force cloud usage.");
+        // We could implement a fallback, but let's stick to the request for "image storage option".
     }
 
-    // Generate unique filename
-    const ext = file.name.split(".").pop();
-    const filename = `${randomUUID()}.${ext}`;
-    const filepath = join(uploadDir, filename);
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "mbinga-products" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result as { secure_url: string });
+        }
+      );
+      uploadStream.end(buffer);
+    });
 
-    // Write file
-    await writeFile(filepath, buffer);
-
-    return { success: true, url: `/uploads/${filename}` };
+    return { success: true, url: result.secure_url };
   } catch (error) {
     console.error("Upload error:", error);
     return { success: false, error: "Failed to upload image" };

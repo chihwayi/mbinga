@@ -9,24 +9,6 @@ import Link from "next/link";
 export default function CartDrawer() {
   const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
 
-  const handleCheckout = () => {
-    // Format cart items for WhatsApp message
-    const itemsList = cart
-      .map((item) => `- ${item.quantity}x ${item.product.name} ($${item.product.price})`)
-      .join("\n");
-    
-    const total = getCartTotal();
-    
-    const message = encodeURIComponent(
-      `Hello MBINGA, I would like to place an order:\n\n${itemsList}\n\nTotal: $${total}\n\nPlease let me know the payment details.`
-    );
-
-    // Replace with actual WhatsApp number
-    const phoneNumber = "263770000000"; 
-    
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-  };
-
   return (
     <AnimatePresence>
       {isCartOpen && (
@@ -152,13 +134,14 @@ export default function CartDrawer() {
                     <span>${getCartTotal()}</span>
                   </div>
                 </div>
-                <button 
-                  onClick={handleCheckout}
+                <Link 
+                  href="/checkout"
+                  onClick={toggleCart}
                   className="w-full py-4 bg-gold text-obsidian font-bold tracking-[0.2em] hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                   CHECKOUT
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </button>
+                </Link>
                 <p className="text-xs text-center text-gray-500 mt-2">
                   Shipping & taxes calculated at checkout
                 </p>

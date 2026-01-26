@@ -3,8 +3,14 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 export async function createProduct(formData: FormData) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
   const tagline = formData.get("tagline") as string;
@@ -41,6 +47,11 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(id: string, formData: FormData) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
   const tagline = formData.get("tagline") as string;
@@ -79,6 +90,11 @@ export async function updateProduct(id: string, formData: FormData) {
 }
 
 export async function deleteProduct(id: string) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
   await prisma.product.delete({
     where: { id },
   });
