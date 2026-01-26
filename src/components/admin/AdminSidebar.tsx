@@ -27,7 +27,7 @@ export default function AdminSidebar() {
         <Link href="/" className="block">
           <div className="relative h-8 w-24 mb-2">
             <Image
-              src="/images/logo.png"
+              src="/images/logo.svg"
               alt="MBINGA"
               fill
               className="object-contain object-left"

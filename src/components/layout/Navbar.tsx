@@ -34,7 +34,7 @@ export default function Navbar() {
 
         <Link href="/" className="relative h-12 w-32 hover:opacity-80 transition-opacity">
           <Image
-            src="/images/logo.png"
+            src="/images/logo.svg"
             alt="MBINGA"
             fill
             className="object-contain"

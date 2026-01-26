@@ -28,7 +28,7 @@ export default function Hero() {
           className="relative w-[280px] h-[100px] md:w-[600px] md:h-[200px] mb-8"
         >
           <Image
-            src="/images/logo.png"
+            src="/images/logo.svg"
             alt="MBINGA"
             fill
             className="object-contain"

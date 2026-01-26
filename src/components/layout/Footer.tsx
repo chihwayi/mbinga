@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="col-span-1 md:col-span-1">
           <div className="relative h-16 w-40 mb-6">
              <Image
-                src="/images/logo.png"
+                src="/images/logo.svg"
                 alt="MBINGA"
                 fill
                 className="object-contain object-left"
