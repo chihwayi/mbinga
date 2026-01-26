@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, ShoppingCart, LogOut, Settings } from "lucide-react";
 import { motion } from "framer-motion";
@@ -24,9 +25,14 @@ export default function AdminSidebar() {
     <aside className="w-64 bg-obsidian border-r border-white/10 h-screen flex flex-col fixed left-0 top-0 z-50">
       <div className="p-8 border-b border-white/10">
         <Link href="/" className="block">
-          <h1 className="font-serif text-2xl text-gold tracking-[0.2em] hover:text-white transition-colors">
-            MBINGA
-          </h1>
+          <div className="relative h-8 w-24 mb-2">
+            <Image
+              src="/images/logo.png"
+              alt="MBINGA"
+              fill
+              className="object-contain object-left"
+            />
+          </div>
           <span className="text-[10px] uppercase tracking-widest text-white/40">Admin Portal</span>
         </Link>
       </div>

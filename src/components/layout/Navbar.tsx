@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X } from "lucide-react";
@@ -31,8 +32,14 @@ export default function Navbar() {
           <Menu size={24} />
         </button>
 
-        <Link href="/" className="font-serif text-3xl font-semibold tracking-[0.2em] text-gold hover:text-gold-light transition-colors">
-          MBINGA
+        <Link href="/" className="relative h-12 w-32 hover:opacity-80 transition-opacity">
+          <Image
+            src="/images/logo.png"
+            alt="MBINGA"
+            fill
+            className="object-contain"
+            priority
+          />
         </Link>
 
         <ul className="hidden md:flex gap-12 list-none">

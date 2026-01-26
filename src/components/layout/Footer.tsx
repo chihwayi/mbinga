@@ -1,11 +1,19 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="bg-obsidian pt-24 pb-12 border-t border-gold/20">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-1">
-          <h3 className="font-serif text-2xl text-gold mb-4 tracking-widest">MBINGA</h3>
+          <div className="relative h-16 w-40 mb-6">
+             <Image
+                src="/images/logo.png"
+                alt="MBINGA"
+                fill
+                className="object-contain object-left"
+             />
+          </div>
           <p className="text-cream/70 text-sm leading-relaxed">
             Born from the heart of Africa, defined by presence, refinement, and quiet authority.
           </p>
