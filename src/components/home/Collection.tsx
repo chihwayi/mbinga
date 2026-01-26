@@ -28,47 +28,52 @@ export default function Collection({ products }: { products: Product[] }) {
     if (!container) return;
 
     let animationFrameId: number;
-    let startTime: number | null = null;
-    const scrollSpeed = 0.5; // Pixels per frame (adjust for speed)
+    const scrollSpeed = 0.8; // Slightly increased speed
     let isHovering = false;
+    let scrollPos = container.scrollLeft;
 
-    const scroll = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      
-      if (!isHovering) {
-        if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
-           // Reset to start seamlessly if possible, or smooth scroll back
-           // For a true infinite loop, we'd need to duplicate items. 
-           // For now, let's just scroll back to 0 slowly or loop.
-           // A better approach for "beautiful" sliding is to just keep scrolling and maybe duplicate items
-           // creating an infinite carousel effect.
-           
-           // Simple reset for now:
-           container.scrollLeft = 0;
-        } else {
-            container.scrollLeft += scrollSpeed;
+    const scroll = () => {
+      if (!isHovering && container) {
+        scrollPos += scrollSpeed;
+        
+        // Check if we've reached the end
+        if (scrollPos >= container.scrollWidth - container.clientWidth) {
+           scrollPos = 0;
         }
+        
+        container.scrollLeft = scrollPos;
       }
       
       animationFrameId = requestAnimationFrame(scroll);
     };
 
-    // To make it truly beautiful, we can duplicate the products array to create an infinite scroll illusion
-    // But since we are using native scroll container, let's just use a gentle auto-scroll
-    // that pauses on hover.
-    
     animationFrameId = requestAnimationFrame(scroll);
 
     const handleMouseEnter = () => { isHovering = true; };
-    const handleMouseLeave = () => { isHovering = false; };
+    const handleMouseLeave = () => { 
+        isHovering = false; 
+        // Sync our tracker with actual scroll position in case user scrolled manually
+        scrollPos = container.scrollLeft;
+    };
+    
+    // Touch support
+    const handleTouchStart = () => { isHovering = true; };
+    const handleTouchEnd = () => { 
+        isHovering = false;
+        scrollPos = container.scrollLeft;
+    };
 
     container.addEventListener("mouseenter", handleMouseEnter);
     container.addEventListener("mouseleave", handleMouseLeave);
+    container.addEventListener("touchstart", handleTouchStart);
+    container.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
