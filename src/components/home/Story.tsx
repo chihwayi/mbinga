@@ -33,7 +33,7 @@ export default function Story() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative h-[600px] border border-gold/30 bg-gradient-to-br from-amethyst-dark to-obsidian overflow-hidden group"
+          className="relative h-[600px] border border-gold/30 bg-gradient-to-br from-warm-grey to-obsidian overflow-hidden group"
         >
             <div className="absolute inset-0 flex items-center justify-center">
                 <span className="font-serif text-6xl text-gold/10 text-center tracking-widest group-hover:scale-110 transition-transform duration-1000">

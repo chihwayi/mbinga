@@ -7,9 +7,9 @@ export default function Hero() {
     <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden">
       {/* Background Gradient Pulse */}
       <motion.div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-amethyst)_0%,_var(--color-obsidian)_70%)] opacity-30"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-gold)_0%,_var(--color-obsidian)_70%)] opacity-20"
         animate={{
-          opacity: [0.3, 0.5, 0.3],
+          opacity: [0.2, 0.3, 0.2],
           scale: [1, 1.1, 1],
         }}
         transition={{

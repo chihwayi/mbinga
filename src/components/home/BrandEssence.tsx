@@ -44,7 +44,7 @@ export default function BrandEssence() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.2 }}
-              className="group p-10 bg-amethyst/5 border border-gold/20 hover:bg-amethyst/10 hover:border-gold hover:-translate-y-2 transition-all duration-500 text-center"
+              className="group p-10 bg-white/5 border border-gold/20 hover:bg-white/10 hover:border-gold hover:-translate-y-2 transition-all duration-500 text-center"
             >
               <div className="text-6xl mb-8 group-hover:scale-110 transition-transform duration-300 filter drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">
                 {item.emoji}
