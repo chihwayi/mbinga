@@ -22,10 +22,6 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
-
   async function loadOrders() {
     const result = await getOrders();
     if (result.success && result.orders) {
@@ -33,6 +29,10 @@ export default function AdminOrders() {
     }
     setIsLoading(false);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

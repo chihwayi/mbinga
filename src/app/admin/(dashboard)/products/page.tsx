@@ -4,6 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { deleteProduct } from "@/actions/products";
 
+function getProductImage(image: string, slug: string) {
+  let src = image || "";
+
+  if (src.endsWith(".jpg")) {
+    src = src.replace(".jpg", ".png");
+  }
+
+  if (slug === "uzoba-lit") {
+    src = "/images/unoziba-lit.png";
+  }
+
+  return src;
+}
+
 export default async function AdminProducts() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: 'desc' }
@@ -62,7 +76,13 @@ export default async function AdminProducts() {
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden bg-white">
                             {product.image ? (
-                                <Image src={product.image} alt={product.name} width={48} height={48} className="object-cover w-full h-full" />
+                                <Image 
+                                  src={getProductImage(product.image, product.slug)} 
+                                  alt={product.name} 
+                                  width={48} 
+                                  height={48} 
+                                  className="object-cover w-full h-full" 
+                                />
                             ) : (
                                 <span className="text-xs text-black/20 font-serif">Img</span>
                             )}

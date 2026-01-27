@@ -6,14 +6,28 @@ import Image from "next/image";
 import { motion, useScroll, useAnimation, useMotionValue } from "framer-motion";
 
 interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    tagline: string;
-    accentColor: string;
-    category: string;
-    notes: string[];
-    image: string;
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  accentColor: string;
+  category: string;
+  notes: string[];
+  image: string;
+}
+
+function getProductImage(product: Product) {
+  let src = product.image || "";
+
+  if (src.endsWith(".jpg")) {
+    src = src.replace(".jpg", ".png");
+  }
+
+  if (product.slug === "uzoba-lit") {
+    src = "/images/unoziba-lit.png";
+  }
+
+  return src;
 }
 
 export default function Collection({ products }: { products: Product[] }) {
@@ -105,14 +119,14 @@ export default function Collection({ products }: { products: Product[] }) {
               className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
             >
               {/* Product Image */}
-              {product.image && (
+              {getProductImage(product) && (
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
-                    <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover opacity-60 grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
-                    />
+                  <Image
+                    src={getProductImage(product)}
+                    alt={product.name}
+                    fill
+                    className="object-cover opacity-60 grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
+                  />
                 </div>
               )}
 

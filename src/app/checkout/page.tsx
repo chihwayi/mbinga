@@ -7,6 +7,20 @@ import Link from "next/link";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import Image from "next/image";
 
+function getCartImage(image: string, slug?: string) {
+  let src = image || "";
+
+  if (src.endsWith(".jpg")) {
+    src = src.replace(".jpg", ".png");
+  }
+
+  if (slug === "uzoba-lit") {
+    src = "/images/unoziba-lit.png";
+  }
+
+  return src;
+}
+
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,7 +144,7 @@ export default function CheckoutPage() {
                         )}
                     </button>
                     <p className="text-center text-white/30 text-xs">
-                        By clicking "Complete Order", you will be redirected to WhatsApp to finalize your payment.
+                        By clicking &quot;Complete Order&quot;, you will be redirected to WhatsApp to finalize your payment.
                     </p>
                 </form>
             </div>
@@ -143,7 +157,7 @@ export default function CheckoutPage() {
                         <div key={item.product.id} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-white/5">
                                 <Image 
-                                    src={item.product.image} 
+                                    src={getCartImage(item.product.image, item.product.slug)} 
                                     alt={item.product.name}
                                     fill
                                     className="object-cover"

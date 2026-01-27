@@ -6,6 +6,20 @@ import { X, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+function getCartImage(image: string, slug?: string) {
+  let src = image || "";
+
+  if (src.endsWith(".jpg")) {
+    src = src.replace(".jpg", ".png");
+  }
+
+  if (slug === "uzoba-lit") {
+    src = "/images/unoziba-lit.png";
+  }
+
+  return src;
+}
+
 export default function CartDrawer() {
   const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
 
@@ -65,7 +79,7 @@ export default function CartDrawer() {
                   >
                     <div className="relative w-20 h-20 bg-white/5 rounded-md overflow-hidden shrink-0">
                       <Image
-                        src={item.product.image}
+                        src={getCartImage(item.product.image, item.product.slug)}
                         alt={item.product.name}
                         fill
                         className="object-cover"

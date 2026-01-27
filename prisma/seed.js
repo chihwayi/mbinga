@@ -190,7 +190,7 @@ async function main() {
   for (const p of products) {
     const product = await prisma.product.upsert({
       where: { slug: p.slug },
-      update: {},
+      update: p,
       create: p,
     })
     console.log(`Created product with id: ${product.id}`)
