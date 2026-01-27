@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Story() {
   return (
@@ -35,13 +36,14 @@ export default function Story() {
           transition={{ duration: 0.8 }}
           className="relative h-[600px] border border-gold/30 bg-gradient-to-br from-warm-grey to-obsidian overflow-hidden group"
         >
-            <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-serif text-6xl text-gold/10 text-center tracking-widest group-hover:scale-110 transition-transform duration-1000">
-                    CRAFTED <br/> IN <br/> AFRICA
-                </span>
-            </div>
-            {/* CSS Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gold/5 via-transparent to-transparent opacity-20"></div>
+            <Image 
+                src="/images/african-soul.png" 
+                alt="Crafted with African Soul"
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-110"
+            />
+            {/* CSS Pattern Overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gold/5 via-transparent to-transparent opacity-20 pointer-events-none"></div>
         </motion.div>
       </div>
     </section>

@@ -15,7 +15,7 @@ const products = [
     stock: 15,
     notes: "Agarwood, Rosewood, Sandalwood, Amber",
     ingredients: "Agarwood, Rosewood, Sandalwood, Amber",
-    image: "/images/ngwere-oud.jpg",
+    image: "/images/ngwere-oud.png",
     accentColor: "#3d2817"
   },
   {
@@ -30,7 +30,7 @@ const products = [
     stock: 8,
     notes: "Agarwood, Saffron, Rose, Birch, Amber",
     ingredients: "Agarwood, Saffron, Rose, Birch, Amber",
-    image: "/images/manyama-oud.jpg",
+    image: "/images/manyama-oud.png",
     accentColor: "#4a1a4a"
   },
   {
@@ -45,7 +45,7 @@ const products = [
     stock: 20,
     notes: "French Jasmine, Black Truffle, Ylang-ylang",
     ingredients: "French Jasmine, Black Truffle, Ylang-ylang",
-    image: "/images/gafa-intense.jpg",
+    image: "/images/gafa-intense.png",
     accentColor: "#1a1a2d"
   },
   {
@@ -60,7 +60,7 @@ const products = [
     stock: 12,
     notes: "Tobacco Leaf, Spicy Notes, Pink Pepper",
     ingredients: "Tobacco Leaf, Spicy Notes, Pink Pepper",
-    image: "/images/shungu.jpg",
+    image: "/images/shungu.png",
     accentColor: "#3d1a1a"
   },
   {
@@ -75,7 +75,7 @@ const products = [
     stock: 10,
     notes: "Apple, Citrus Fruits, Bergamot",
     ingredients: "Apple, Citrus Fruits, Bergamot",
-    image: "/images/goridhe.jpg",
+    image: "/images/goridhe.png",
     accentColor: "#D4AF37"
   },
   {
@@ -90,7 +90,7 @@ const products = [
     stock: 5,
     notes: "Saffron, Jasmine, Ambergris, Cedarwood",
     ingredients: "Saffron, Jasmine, Ambergris, Cedarwood",
-    image: "/images/maboss.jpg",
+    image: "/images/maboss.png",
     accentColor: "#2A2A2A"
   },
   {
@@ -105,7 +105,7 @@ const products = [
     stock: 25,
     notes: "Raspberry, Rose, Pink Pepper",
     ingredients: "Raspberry, Rose, Pink Pepper",
-    image: "/images/dadiso.jpg",
+    image: "/images/dadiso.png",
     accentColor: "#B565A7"
   },
   {
@@ -120,7 +120,7 @@ const products = [
     stock: 18,
     notes: "Bergamot, Grapefruit, Rosemary",
     ingredients: "Bergamot, Grapefruit, Rosemary",
-    image: "/images/uzoba-lit.jpg",
+    image: "/images/unoziba-lit.png",
     accentColor: "#E25822"
   },
   {
@@ -135,7 +135,7 @@ const products = [
     stock: 0,
     notes: "Saffron, Bergamot, Spicy Accords",
     ingredients: "Saffron, Bergamot, Spicy Accords",
-    image: "/images/dna-oud.jpg",
+    image: "/images/dna-oud.png",
     accentColor: "#2F4F4F"
   },
   {
@@ -150,7 +150,7 @@ const products = [
     stock: 3,
     notes: "Bergamot, Orange, Green Notes",
     ingredients: "Bergamot, Orange, Green Notes",
-    image: "/images/goldess.jpg",
+    image: "/images/goldess.png",
     accentColor: "#FFD700"
   }
 ]
