@@ -22,10 +22,15 @@ export default function Footer() {
         <div>
           <h4 className="font-serif text-lg text-cream mb-6 tracking-widest">Collections</h4>
           <ul className="space-y-3">
-            {["All Fragrances", "For Him", "For Her", "Unisex"].map((item) => (
-              <li key={item}>
-                <Link href="#" className="text-cream/70 hover:text-gold transition-colors text-sm hover:pl-1 block">
-                  {item}
+            {[
+              { label: "All Fragrances", href: "/" },
+              { label: "For Him", href: "/#collections" },
+              { label: "For Her", href: "/#collections" },
+              { label: "Unisex", href: "/#collections" },
+            ].map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="text-cream/70 hover:text-gold transition-colors text-sm hover:pl-1 block">
+                  {item.label}
                 </Link>
               </li>
             ))}
@@ -35,10 +40,15 @@ export default function Footer() {
         <div>
           <h4 className="font-serif text-lg text-cream mb-6 tracking-widest">Company</h4>
           <ul className="space-y-3">
-            {["Our Story", "Journal", "Contact", "Stockists"].map((item) => (
-              <li key={item}>
-                <Link href="#" className="text-cream/70 hover:text-gold transition-colors text-sm hover:pl-1 block">
-                  {item}
+            {[
+              { label: "Our Story", href: "/about" },
+              { label: "Journal", href: "/#journal" },
+              { label: "Contact", href: "/#contact" },
+              { label: "Stockists", href: "#" },
+            ].map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="text-cream/70 hover:text-gold transition-colors text-sm hover:pl-1 block">
+                  {item.label}
                 </Link>
               </li>
             ))}

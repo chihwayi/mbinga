@@ -14,7 +14,12 @@ export default function Navbar() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-  const menuItems = ["Collections", "Our Story", "Journal", "Contact"];
+  const menuItems = [
+    { label: "Collections", href: "/#collections" },
+    { label: "Our Story", href: "/about" },
+    { label: "Journal", href: "/#journal" },
+    { label: "Contact", href: "/#contact" },
+  ];
 
   return (
     <>
@@ -44,12 +49,12 @@ export default function Navbar() {
 
         <ul className="hidden md:flex gap-12 list-none">
           {menuItems.map((item) => (
-            <li key={item}>
+            <li key={item.label}>
               <Link
-                href={`#${item.toLowerCase().replace(" ", "-")}`}
+                href={item.href}
                 className="text-cream text-sm uppercase tracking-widest relative group hover:text-gold transition-colors"
               >
-                {item}
+                {item.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold transition-all duration-300 group-hover:w-full" />
               </Link>
             </li>
@@ -88,17 +93,17 @@ export default function Navbar() {
             <ul className="flex flex-col gap-8 text-center">
               {menuItems.map((item, index) => (
                 <motion.li
-                  key={item}
+                  key={item.label}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
                 >
                   <Link
-                    href={`#${item.toLowerCase().replace(" ", "-")}`}
+                    href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="font-serif text-3xl text-gold hover:text-white transition-colors tracking-widest"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </motion.li>
               ))}
