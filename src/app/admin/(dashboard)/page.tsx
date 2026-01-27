@@ -33,6 +33,13 @@ export default async function AdminDashboard() {
 
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
+  // Fetch low stock products
+  const lowStockProducts = await prisma.product.findMany({
+    where: { stock: { lte: 5 } },
+    take: 5,
+    orderBy: { stock: 'asc' }
+  });
+
   return (
     <div className="space-y-12">
       <div className="flex items-end justify-between">
@@ -64,50 +71,75 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {/* Recent Orders */}
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <h3 className="font-serif text-xl text-white">Recent Orders</h3>
-          <button className="text-xs text-gold hover:text-white uppercase tracking-widest transition-colors">View All</button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Orders */}
+        <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+            <h3 className="font-serif text-xl text-white">Recent Orders</h3>
+            <button className="text-xs text-gold hover:text-white uppercase tracking-widest transition-colors">View All</button>
+            </div>
+            <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+                <thead>
+                <tr className="bg-white/5 text-white/40 uppercase tracking-widest text-[10px]">
+                    <th className="p-6 font-medium">Order ID</th>
+                    <th className="p-6 font-medium">Customer</th>
+                    <th className="p-6 font-medium">Total</th>
+                    <th className="p-6 font-medium">Status</th>
+                </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                {recentOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                    <td className="p-6 font-medium text-white">{order.id}</td>
+                    <td className="p-6 text-white/80">
+                        <div>{order.customer}</div>
+                        <div className="text-xs text-white/40 truncate max-w-[150px]">{order.items}</div>
+                    </td>
+                    <td className="p-6 text-gold">{order.total}</td>
+                    <td className="p-6">
+                        <span className={`px-2 py-1 rounded text-[10px] uppercase tracking-wide font-medium ${
+                            order.status === 'Paid' ? 'bg-emerald-400/10 text-emerald-400' :
+                            order.status === 'Pending' ? 'bg-amber-400/10 text-amber-400' :
+                            'bg-blue-400/10 text-blue-400'
+                        }`}>
+                            {order.status}
+                        </span>
+                    </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+            </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="bg-white/5 text-white/40 uppercase tracking-widest text-[10px]">
-                <th className="p-6 font-medium">Order ID</th>
-                <th className="p-6 font-medium">Customer</th>
-                <th className="p-6 font-medium">Items</th>
-                <th className="p-6 font-medium">Total</th>
-                <th className="p-6 font-medium">Status</th>
-                <th className="p-6 font-medium">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {recentOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-white/5 transition-colors">
-                  <td className="p-6 font-medium text-white">{order.id}</td>
-                  <td className="p-6 text-white/80">{order.customer}</td>
-                  <td className="p-6 text-white/60">{order.items}</td>
-                  <td className="p-6 text-gold">{order.total}</td>
-                  <td className="p-6">
-                    <span className={`px-2 py-1 rounded text-[10px] uppercase tracking-wide font-medium ${
-                        order.status === 'Paid' ? 'bg-emerald-400/10 text-emerald-400' :
-                        order.status === 'Pending' ? 'bg-amber-400/10 text-amber-400' :
-                        'bg-blue-400/10 text-blue-400'
-                    }`}>
-                        {order.status}
-                    </span>
-                  </td>
-                  <td className="p-6 text-white/40">{order.date}</td>
-                </tr>
-              ))}
-              {recentOrders.length === 0 && (
-                <tr>
-                    <td colSpan={6} className="p-6 text-center text-white/40">No orders found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+
+        {/* Low Stock Alerts */}
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden h-fit">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <h3 className="font-serif text-xl text-white">Low Stock Alerts</h3>
+            </div>
+            <div className="divide-y divide-white/5">
+                {lowStockProducts.length === 0 ? (
+                    <div className="p-8 text-center text-white/40 text-sm">
+                        All stock levels are healthy.
+                    </div>
+                ) : (
+                    lowStockProducts.map(product => (
+                        <div key={product.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
+                            <div>
+                                <h4 className="font-medium text-white mb-1">{product.name}</h4>
+                                <p className="text-xs text-white/40 uppercase tracking-wider">{product.category}</p>
+                            </div>
+                            <div className="text-right">
+                                <span className={`text-xl font-serif ${product.stock === 0 ? 'text-red-500' : 'text-amber-400'}`}>
+                                    {product.stock}
+                                </span>
+                                <p className="text-[10px] text-white/30 uppercase tracking-widest">Left</p>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
       </div>
     </div>

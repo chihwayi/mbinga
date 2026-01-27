@@ -55,7 +55,7 @@ export default function CheckoutPage() {
 
     try {
         // 1. Create order in database
-        await createOrder({
+        const result = await createOrder({
             customer,
             phone,
             email,
@@ -68,9 +68,16 @@ export default function CheckoutPage() {
             }))
         });
 
+        if (!result.success || !result.order) {
+            throw new Error(result.error || "Failed to create order");
+        }
+
+        const orderId = result.order.id;
+
         // 2. Prepare WhatsApp Message
         const message = encodeURIComponent(
-            `*New Order Request*\n\n` +
+            `*New Order Request*\n` +
+            `*Order ID:* ${orderId}\n\n` +
             `*Customer:* ${customer}\n` +
             `*Phone:* ${phone}\n` +
             `*Address:* ${address}\n\n` +
