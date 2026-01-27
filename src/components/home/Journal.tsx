@@ -9,21 +9,21 @@ const articles = [
     title: "The Art of Layering Scents",
     category: "Rituals",
     date: "Oct 24, 2025",
-    image: "/images/journal-1.jpg", // Placeholder
+    image: "https://images.unsplash.com/photo-1595425243110-639a099a5c4e?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: 2,
     title: "Sourcing Oud from the Source",
     category: "Ingredients",
     date: "Nov 12, 2025",
-    image: "/images/journal-2.jpg", // Placeholder
+    image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: 3,
     title: "Defining Presence",
     category: "Lifestyle",
     date: "Dec 05, 2025",
-    image: "/images/journal-3.jpg", // Placeholder
+    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
@@ -58,10 +58,17 @@ export default function Journal() {
               className="group cursor-pointer"
             >
               <div className="relative h-80 mb-6 overflow-hidden bg-white/5">
-                {/* Placeholder for image */}
-                <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                <div className="absolute inset-0 flex items-center justify-center text-white/10 font-serif text-4xl group-hover:scale-110 transition-transform duration-700">
-                  {article.category[0]}
+                <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-transparent opacity-90" />
+                <div className="absolute bottom-0 left-0 p-6">
+                    <div className="text-white/10 font-serif text-6xl absolute -top-12 -right-4 opacity-20">
+                        {article.category[0]}
+                    </div>
                 </div>
               </div>
               
