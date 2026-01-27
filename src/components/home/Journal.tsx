@@ -9,7 +9,7 @@ const articles = [
     title: "The Art of Layering Scents",
     category: "Rituals",
     date: "Oct 24, 2025",
-    image: "https://images.unsplash.com/photo-1595425243110-639a099a5c4e?q=80&w=800&auto=format&fit=crop",
+    image: "/images/african-soul.png",
   },
   {
     id: 2,
