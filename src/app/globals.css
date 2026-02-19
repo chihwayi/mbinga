@@ -1,17 +1,14 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-obsidian: #000000;
   --color-gold: #D4AF37;
-  --color-gold-light: #C6A75E;
-  --color-gold-gradient-start: #F5D37A;
-  --color-gold-gradient-end: #B8892D;
+  --color-gold-light: #F5D37A; /* Lighter gold for exact match */
   --color-cream: #F5F3EF;
   --color-warm-grey: #141414;
 
   --font-serif: var(--font-cormorant), serif;
   --font-sans: var(--font-inter), sans-serif;
-  --font-libre-bodoni: var(--font-libre-bodoni), serif;
 }
 
 /* Custom Utilities */

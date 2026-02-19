@@ -47,7 +47,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.8 }}
           transition={{ delay: 1, duration: 1.5 }}
-          className="font-[var(--font-libre-bodoni)] text-xl md:text-2xl tracking-[0.2em] uppercase text-gold"
+          className="font-serif text-lg md:text-xl font-light tracking-widest uppercase text-[var(--color-gold-light)]"
           role="heading"
           aria-level={2}
         >
