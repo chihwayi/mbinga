@@ -11,6 +11,7 @@
 
   --font-serif: var(--font-cormorant), serif;
   --font-sans: var(--font-inter), sans-serif;
+  --font-libre-bodoni: var(--font-libre-bodoni), serif;
 }
 
 /* Custom Utilities */

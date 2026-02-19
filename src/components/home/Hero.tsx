@@ -45,13 +45,13 @@ export default function Hero() {
 
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: 0.8 }}
           transition={{ delay: 1, duration: 1.5 }}
-          className="font-playfair text-xl md:text-2xl text-gold"
+          className="font-[var(--font-libre-bodoni)] text-xl md:text-2xl tracking-[0.2em] uppercase text-gold"
           role="heading"
           aria-level={2}
         >
-          Born in the Heart of Africa
+          BORN IN THE HEART OF AFRICA
         </motion.p>
       </div>
 
