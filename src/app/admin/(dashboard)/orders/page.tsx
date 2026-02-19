@@ -29,9 +29,12 @@ export default function AdminOrders() {
     }
     setIsLoading(false);
   }
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    loadOrders();
+    const timeoutId = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

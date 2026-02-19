@@ -22,10 +22,11 @@ function getCartImage(image: string, slug?: string) {
 
 export default function CartDrawer() {
   const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const isClient = typeof window !== "undefined";
 
   return (
     <AnimatePresence>
-      {isCartOpen && (
+      {isClient && isCartOpen && (
         <>
           {/* Backdrop */}
           <motion.div

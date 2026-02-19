@@ -45,9 +45,9 @@ export default function Hero() {
 
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1.5 }}
-          className="font-serif text-lg md:text-xl font-light tracking-widest uppercase text-[var(--color-gold-light)]"
+          className="font-serif text-lg md:text-xl font-light tracking-widest uppercase text-gold/70"
           role="heading"
           aria-level={2}
         >
