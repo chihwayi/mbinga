@@ -6,12 +6,12 @@ import Image from "next/image";
 export default function Hero() {
   return (
     <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden">
-      {/* Background Gradient Pulse */}
+      {/* Subtle Gold Glow Behind Logo */}
       <motion.div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-gold)_0%,_var(--color-obsidian)_70%)] opacity-20"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_var(--color-obsidian)_70%)] opacity-10"
         animate={{
-          opacity: [0.2, 0.3, 0.2],
-          scale: [1, 1.1, 1],
+          opacity: [0.1, 0.15, 0.1],
+          scale: [1, 1.05, 1],
         }}
         transition={{
           duration: 8,
@@ -26,6 +26,9 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           className="relative w-[280px] h-[100px] md:w-[600px] md:h-[200px] mb-8"
+          style={{
+            filter: "drop-shadow(0 0 20px rgba(212, 175, 55, 0.3))"
+          }}
         >
           <Image
             src="/images/logo.svg"
@@ -38,11 +41,11 @@ export default function Hero() {
 
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
+          animate={{ opacity: 0.7 }}
           transition={{ delay: 1, duration: 1.5 }}
-          className="text-lg md:text-xl tracking-[0.3em] uppercase text-cream/80"
+          className="text-lg md:text-xl tracking-[0.3em] uppercase text-gold/70"
         >
-          Born from the Heart of Africa
+          BORN IN THE HEART OF AFRICA
         </motion.p>
       </div>
 

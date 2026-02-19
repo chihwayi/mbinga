@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${cormorantGaramond.variable} ${inter.variable} antialiased bg-obsidian text-cream`}
+        className={`${cormorantGaramond.variable} ${inter.variable} antialiased bg-black text-cream`}
       >
         <CartProvider>
           {children}

@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-obsidian: #0E0E0E;
+  --color-obsidian: #000000;
   --color-gold: #D4AF37;
-  --color-gold-light: #C9A961;
+  --color-gold-light: #C6A75E;
+  --color-gold-gradient-start: #F5D37A;
+  --color-gold-gradient-end: #B8892D;
   --color-cream: #F5F3EF;
   --color-warm-grey: #141414;
 

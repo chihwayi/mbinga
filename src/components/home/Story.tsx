@@ -15,17 +15,14 @@ export default function Story() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="font-serif text-4xl md:text-6xl text-gold mb-8 leading-tight">
-            Crafted with <br /> African Soul
+            A Legacy in <br /> Every Bottle
           </h2>
-          <p className="text-cream/80 text-lg leading-relaxed mb-6 font-light">
-            MBINGA is more than fragrance—it is identity expressed through scent. Born from the rich cultural tapestry of Zimbabwe and elevated through the art of niche perfumery, each creation tells a story of heritage, power, and refined elegance.
-          </p>
           <p className="text-cream/80 text-lg leading-relaxed mb-10 font-light">
-            Our master perfumers source rare ingredients from across the continent, weaving them into compositions that honor our roots while defining modern luxury. From the woody depths of Ngwéré Oud to the vibrant energy of Uzoba Lit, every fragrance is an invitation to discover your olfactory signature.
+            In Shona culture, Mbinga speaks of strength, resilience, and a position earned through vision and action. Our fragrances embody this spirit, weaving together rare ingredients from across the continent to create scents that command respect and leave a lasting impression.
           </p>
           
           <Link href="/about" className="inline-block px-8 py-4 bg-obsidian border border-gold text-gold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300">
-            Discover Our Heritage
+            Discover Our Story
           </Link>
         </motion.div>
 

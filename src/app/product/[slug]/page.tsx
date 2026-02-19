@@ -2,7 +2,6 @@ import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Cursor from "@/components/ui/Cursor";
 import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import AddToCartSection from "@/components/product/AddToCartSection";
@@ -31,8 +30,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const ingredients = product.ingredients.split(", ");
 
   return (
-    <main className="min-h-screen bg-obsidian text-cream selection:bg-gold selection:text-white">
-      <Cursor />
+    <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-white">
       <Navbar />
 
       <div className="pt-24 min-h-screen flex flex-col md:flex-row">

@@ -2,7 +2,6 @@
 import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Cursor from "@/components/ui/Cursor";
 
 export const metadata: Metadata = {
   title: "About Us | MBINGA",
@@ -11,8 +10,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-obsidian text-cream selection:bg-gold selection:text-white">
-      <Cursor />
+    <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-white">
       <Navbar />
       
       <section className="pt-48 pb-24 px-8 md:px-12 max-w-7xl mx-auto">
@@ -21,24 +19,28 @@ export default function AboutPage() {
             Our Story
           </span>
           <h1 className="font-serif text-5xl md:text-7xl mb-12 text-cream">
-            The Essence of <br />
-            <span className="text-gold">MBINGA</span>
+            Born in the <br />
+            <span className="text-gold">Heart of Africa</span>
           </h1>
           
           <div className="space-y-8 text-lg md:text-xl font-light leading-relaxed text-white/80">
             <p>
-              MBINGA is more than a fragrance house; it is a testament to the enduring power and elegance of African heritage. 
-              Our name, derived from the Shona word for a wealthy, influential person or 'big boss', reflects our commitment 
-              to creating scents that command attention and respect.
+              Born in the heart of Africa — where the sun warms ancient soil and legacy is carried in the names we bear — MBINGA is more than a fragrance house. It is presence, identity, and earned distinction.
             </p>
             <p>
-              Each fragrance is a meticulously crafted narrative, weaving together rare ingredients sourced from across the continent. 
-              From the smoky depths of aged Oud to the vibrant warmth of African spices, our collections are designed for those 
-              who walk with purpose and leave a lasting impression.
+              In Shona culture, Mbinga speaks of strength, resilience, and a position earned through vision and action — a person of substance who commands respect without raising their voice. MBINGA perfumes carry this spirit: each scent embodies legacy, power, and quiet authority.
             </p>
             <p>
-              We believe in the quiet authority of luxury. It does not need to shout; it is felt. It is in the weight of the glass, 
-              the clarity of the scent, and the confidence it inspires. Welcome to the world of MBINGA.
+              Each fragrance is deliberate, layered, and intentional: smoky Oud, glowing amber, refined spice — crafted to leave a lasting impression.
+            </p>
+            <p>
+              True luxury does not shout; it is felt — in the clarity of the blend and the confidence it awakens within you.
+            </p>
+            <p>
+              From Africa to the world, distinction is not declared — it is lived.
+            </p>
+            <p>
+              Welcome to MBINGA.
             </p>
           </div>
         </div>

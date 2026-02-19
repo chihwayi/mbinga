@@ -1,7 +1,6 @@
 import prisma from "@/lib/db";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Cursor from "@/components/ui/Cursor";
 import Hero from "@/components/home/Hero";
 import BrandEssence from "@/components/home/BrandEssence";
 import Collection from "@/components/home/Collection";
@@ -20,8 +19,7 @@ export default async function Home() {
   }));
 
   return (
-    <main className="min-h-screen bg-obsidian text-cream selection:bg-gold selection:text-obsidian">
-      <Cursor />
+    <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-black">
       <Navbar />
       <Hero />
       <BrandEssence />
