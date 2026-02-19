@@ -49,7 +49,7 @@ export default function CartDrawer() {
               <h2 className="text-2xl font-serif text-gold">Your Collection</h2>
               <button
                 onClick={toggleCart}
-                className="p-2 hover:bg-gold/10 rounded-full transition-colors text-gold/60 hover:text-gold"
+                className="p-2 hover:bg-gold/10 rounded-full transition-colors text-gold/70 hover:text-gold"
               >
                 <X size={24} />
               </button>
@@ -60,7 +60,7 @@ export default function CartDrawer() {
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                   <div className="text-6xl mb-4">✨</div>
-                  <h3 className="text-xl text-gold/80">Your cart is empty</h3>
+                  <h3 className="text-xl text-gold/90">Your cart is empty</h3>
                   <p className="text-gray-400 max-w-xs">
                     Discover your signature scent from our exclusive collection.
                   </p>
@@ -109,7 +109,7 @@ export default function CartDrawer() {
                             onClick={() =>
                               updateQuantity(item.product.id, item.quantity - 1)
                             }
-                            className="text-gold/60 hover:text-gold transition-colors"
+                            className="text-gold/70 hover:text-gold transition-colors"
                           >
                             <Minus size={14} />
                           </button>
@@ -120,7 +120,7 @@ export default function CartDrawer() {
                             onClick={() =>
                               updateQuantity(item.product.id, item.quantity + 1)
                             }
-                            className="text-gold/60 hover:text-gold transition-colors"
+                            className="text-gold/70 hover:text-gold transition-colors"
                           >
                             <Plus size={14} />
                           </button>

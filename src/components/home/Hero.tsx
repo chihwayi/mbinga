@@ -5,7 +5,11 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden">
+    <section 
+      className="relative h-screen flex flex-col justify-center items-center overflow-hidden"
+      role="banner"
+      aria-label="MBINGA Luxury Fragrances - Born in the Heart of Africa"
+    >
       {/* Subtle Gold Glow Behind Logo */}
       <motion.div
         className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_var(--color-obsidian)_70%)] opacity-10"
@@ -41,11 +45,13 @@ export default function Hero() {
 
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1.5 }}
-          className="text-lg md:text-xl tracking-[0.3em] uppercase text-gold/70"
+          className="font-playfair text-xl md:text-2xl text-gold"
+          role="heading"
+          aria-level={2}
         >
-          BORN IN THE HEART OF AFRICA
+          Born in the Heart of Africa
         </motion.p>
       </div>
 

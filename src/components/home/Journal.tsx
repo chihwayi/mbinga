@@ -73,7 +73,7 @@ export default function Journal() {
               </div>
               
               <div className="space-y-3">
-                <div className="flex items-center gap-4 text-xs tracking-widest text-gold/60">
+                <div className="flex items-center gap-4 text-xs tracking-widest text-gold/70">
                   <span className="uppercase">{article.category}</span>
                   <span className="w-1 h-1 bg-gold/60 rounded-full" />
                   <span>{article.date}</span>

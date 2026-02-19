@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter, Playfair_Display } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import "./globals.css";
@@ -17,6 +17,13 @@ const inter = Inter({
   display: "swap",
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "MBINGA | Luxury African Fragrance House",
   description: "Born from the heart of Africa, MBINGA is a luxury fragrance house defined by presence, refinement, and quiet authority.",
@@ -29,8 +36,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body
-        className={`${cormorantGaramond.variable} ${inter.variable} antialiased bg-black text-cream`}
+        className={`${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} antialiased bg-black text-cream`}
       >
         <CartProvider>
           {children}

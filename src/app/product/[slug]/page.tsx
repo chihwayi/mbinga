@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import AddToCartSection from "@/components/product/AddToCartSection";
+import { Metadata } from "next";
 
 import Image from "next/image";
 
@@ -13,6 +14,40 @@ export async function generateStaticParams() {
   return products.map((product) => ({
     slug: product.slug,
   }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({
+    where: { slug },
+  });
+
+  if (!product) {
+    return {
+      title: 'Product Not Found | MBINGA',
+      description: 'The product you are looking for could not be found.',
+    };
+  }
+
+  const notes = product.notes.split(", ").slice(0, 3).join(", ");
+  
+  return {
+    title: `${product.name} | MBINGA Luxury Fragrance`,
+    description: `${product.tagline} Experience the essence of ${product.name} with notes of ${notes}. Crafted with African heritage and luxury refinement.`,
+    openGraph: {
+      title: product.name,
+      description: product.tagline,
+      images: [product.image],
+      type: 'website',
+      siteName: 'MBINGA',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: product.tagline,
+      images: [product.image],
+    },
+  };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {

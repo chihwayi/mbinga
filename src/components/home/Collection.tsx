@@ -114,10 +114,22 @@ export default function Collection({ products }: { products: Product[] }) {
             or ideally we implement a true infinite slider. 
             For this quick implementation, doubling the list helps the "loop" feel. */}
         {[...products, ...products].map((product, index) => (
-          <Link key={`${product.id}-${index}`} href={`/product/${product.slug}`} className="block group flex-shrink-0">
-            <motion.div
-              className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
-            >
+          <motion.div
+            key={`${product.id}-${index}`}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+              delay: (index % products.length) * 0.1, // Stagger based on original product list length
+              duration: 0.6,
+              ease: "easeOut"
+            }}
+            className="block group flex-shrink-0"
+          >
+            <Link href={`/product/${product.slug}`} className="block w-full h-full">
+              <motion.div
+                className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
+              >
               {/* Product Image */}
               {getProductImage(product) && (
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
@@ -150,12 +162,13 @@ export default function Collection({ products }: { products: Product[] }) {
                 <p className="text-cream/70 text-sm line-clamp-2 mb-4 font-light">
                   {product.tagline}
                 </p>
-                <div className="flex gap-2 text-[10px] text-gold/80 tracking-widest uppercase">
+                <div className="flex gap-2 text-[10px] text-gold/90 tracking-widest uppercase">
                     {product.notes.slice(0, 3).join(" · ")}
                 </div>
               </div>
             </motion.div>
           </Link>
+        </motion.div>
         ))}
       </div>
     </section>

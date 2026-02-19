@@ -7,6 +7,7 @@ import Collection from "@/components/home/Collection";
 import Story from "@/components/home/Story";
 import Journal from "@/components/home/Journal";
 import Contact from "@/components/home/Contact";
+import LazyLoadWrapper from "@/components/ui/LazyLoadWrapper";
 
 export default async function Home() {
   const products = await prisma.product.findMany();
@@ -24,9 +25,15 @@ export default async function Home() {
       <Hero />
       <BrandEssence />
       <Collection products={formattedProducts} />
-      <Story />
-      <Journal />
-      <Contact />
+      <LazyLoadWrapper>
+        <Story />
+      </LazyLoadWrapper>
+      <LazyLoadWrapper>
+        <Journal />
+      </LazyLoadWrapper>
+      <LazyLoadWrapper>
+        <Contact />
+      </LazyLoadWrapper>
       <Footer />
     </main>
   );

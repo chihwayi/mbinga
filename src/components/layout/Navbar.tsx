@@ -32,12 +32,14 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button 
           onClick={toggleMobileMenu}
-          className="md:hidden text-gold hover:text-gold-light transition-colors"
+          className="md:hidden text-gold hover:text-gold-light transition-colors focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian"
+          aria-label="Toggle mobile menu"
+          aria-expanded={isMobileMenuOpen}
         >
           <Menu size={24} />
         </button>
 
-        <Link href="/" className="relative h-12 w-32 hover:opacity-80 transition-opacity">
+        <Link href="/" className="relative h-12 w-32 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian">
           <Image
             src="/images/logo.svg"
             alt="MBINGA"
@@ -47,15 +49,15 @@ export default function Navbar() {
           />
         </Link>
 
-        <ul className="hidden md:flex gap-12 list-none">
+        <ul className="hidden md:flex gap-12 list-none" role="navigation">
           {menuItems.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="text-cream text-sm uppercase tracking-widest relative group hover:text-gold transition-colors"
+                className="text-cream text-sm uppercase tracking-widest relative group hover:text-gold transition-colors focus:outline-none focus:text-gold"
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold transition-all duration-300 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold transition-all duration-300 group-hover:w-full group-focus:w-full" />
               </Link>
             </li>
           ))}
@@ -63,7 +65,8 @@ export default function Navbar() {
 
         <button
           onClick={toggleCart}
-          className="text-gold hover:text-gold-light transition-transform hover:scale-110 relative"
+          className="text-gold hover:text-gold-light transition-transform hover:scale-110 relative focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian"
+          aria-label={`Shopping cart with ${itemCount} items`}
         >
           <ShoppingBag size={24} />
           {itemCount > 0 && (
@@ -85,7 +88,8 @@ export default function Navbar() {
           >
             <button
               onClick={toggleMobileMenu}
-              className="absolute top-6 left-8 text-gold hover:text-gold-light transition-colors"
+              className="absolute top-6 left-8 text-gold hover:text-gold-light transition-colors focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian"
+              aria-label="Close mobile menu"
             >
               <X size={24} />
             </button>
@@ -101,7 +105,7 @@ export default function Navbar() {
                   <Link
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="font-serif text-3xl text-gold hover:text-white transition-colors tracking-widest"
+                    className="font-serif text-3xl text-gold hover:text-white transition-colors tracking-widest focus:outline-none focus:text-white"
                   >
                     {item.label}
                   </Link>

@@ -77,10 +77,10 @@ export default function Contact() {
           </form>
 
           <div className="mt-12 pt-8 border-t border-white/10 flex justify-center gap-8">
-            <a href="#" className="text-gold/60 hover:text-gold transition-colors">
+            <a href="#" className="text-gold/70 hover:text-gold transition-colors">
                 <Instagram size={24} />
             </a>
-            <a href="#" className="text-gold/60 hover:text-gold transition-colors">
+            <a href="#" className="text-gold/70 hover:text-gold transition-colors">
                 <Facebook size={24} />
             </a>
           </div>
