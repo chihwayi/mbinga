@@ -27,6 +27,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  useEffect(() => {
+    setIsCartOpen(false);
+  }, []);
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem("mbinga-cart");
