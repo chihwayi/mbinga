@@ -1,4 +1,4 @@
-import prisma from "@/lib/db";
+import { getProductBySlug, getProducts } from "@/actions/products";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -6,21 +6,16 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import AddToCartSection from "@/components/product/AddToCartSection";
 import { Metadata } from "next";
-
 import Image from "next/image";
 
 export async function generateStaticParams() {
-  const products = await prisma.product.findMany();
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+  const products = await getProducts();
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
-  });
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -29,8 +24,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const notes = product.notes.split(", ").slice(0, 3).join(", ");
-  
+  const notes = product.notes.slice(0, 3).join(", ");
+
   return {
     title: `${product.name} | MBINGA Luxury Fragrance`,
     description: `${product.tagline} Experience the essence of ${product.name} with notes of ${notes}. Crafted with African heritage and luxury refinement.`,
@@ -52,17 +47,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
-  });
+  const product = await getProductBySlug(slug);
 
-  if (!product) {
-    notFound();
-  }
-
-  // Parse notes and ingredients from string to array
-  const notes = product.notes.split(", ");
-  const ingredients = product.ingredients.split(", ");
+  if (!product) notFound();
 
   return (
     <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-white">
@@ -70,13 +57,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="pt-24 min-h-screen flex flex-col md:flex-row">
         {/* Left: Visual/Image Area */}
-        <div 
+        <div
             className="w-full md:w-1/2 relative min-h-[50vh] md:min-h-screen flex items-center justify-center overflow-hidden"
             style={{
                 background: `radial-gradient(circle at center, ${product.accentColor}40 0%, #0E0E0E 70%)`
             }}
         >
-            {/* <div className="absolute inset-0 bg-black/20" /> Removed dark overlay */}
             <div className="relative z-10 p-12 text-center">
                  <div className="relative w-80 h-[500px] mx-auto drop-shadow-2xl">
                     <Image
@@ -98,11 +84,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <span className="text-gold text-xs uppercase tracking-[0.3em] mb-4 block">
                 {product.category} Collection
             </span>
-            
+
             <h1 className="font-serif text-5xl md:text-7xl mb-4 text-cream">
                 {product.name}
             </h1>
-            
+
             <p className="text-xl md:text-2xl font-light text-white/60 mb-8 italic font-serif">
                 {product.tagline}
             </p>
@@ -123,7 +109,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <div>
                     <h4 className="text-xs uppercase tracking-widest text-gold mb-4">Olfactory Notes</h4>
                     <ul className="space-y-2">
-                        {notes.map(note => (
+                        {product.notes.map(note => (
                             <li key={note} className="text-white/70 font-light flex items-center gap-2">
                                 <span className="w-1 h-1 bg-gold rounded-full" /> {note}
                             </li>
@@ -133,15 +119,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <div>
                     <h4 className="text-xs uppercase tracking-widest text-gold mb-4">Ingredients</h4>
                     <p className="text-white/60 text-sm leading-relaxed">
-                        {ingredients.join(", ")}
+                        {product.ingredients.join(", ")}
                     </p>
                 </div>
             </div>
 
             <AddToCartSection product={{
                 ...product,
-                notes: notes,
-                ingredients: ingredients,
                 category: product.category as "Men" | "Women" | "Unisex"
             }} />
         </div>

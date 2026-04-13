@@ -1,12 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@prisma/client";
 import { createProduct, updateProduct } from "@/actions/products";
 import { uploadImage } from "@/actions/upload";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
+
+interface Product {
+  id:          string;
+  name:        string;
+  slug:        string;
+  tagline:     string;
+  description: string;
+  story:       string;
+  category:    string;
+  price:       number;
+  stock:       number;
+  notes:       string;
+  ingredients: string;
+  image:       string;
+  accentColor: string;
+}
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();

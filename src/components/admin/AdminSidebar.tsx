@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingCart, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Settings, Images } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
@@ -11,6 +11,7 @@ const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { name: "Hero Slides", href: "/admin/hero", icon: Images },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

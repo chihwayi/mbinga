@@ -1,27 +1,17 @@
-import prisma from "@/lib/db";
+import { getProducts, deleteProduct } from "@/actions/products";
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { deleteProduct } from "@/actions/products";
 
 function getProductImage(image: string, slug: string) {
   let src = image || "";
-
-  if (src.endsWith(".jpg")) {
-    src = src.replace(".jpg", ".png");
-  }
-
-  if (slug === "uzoba-lit") {
-    src = "/images/unoziba-lit.png";
-  }
-
+  if (src.endsWith(".jpg")) src = src.replace(".jpg", ".png");
+  if (slug === "uzoba-lit") src = "/images/unoziba-lit.png";
   return src;
 }
 
 export default async function AdminProducts() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
+  const products = await getProducts();
 
   return (
     <div className="space-y-8">
@@ -30,7 +20,7 @@ export default async function AdminProducts() {
           <h2 className="text-3xl font-serif text-white mb-2">Products</h2>
           <p className="text-white/40 font-light">Manage your perfume collection.</p>
         </div>
-        <Link 
+        <Link
             href="/admin/products/new"
             className="bg-obsidian border border-gold text-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gold hover:text-obsidian transition-colors"
         >
@@ -43,9 +33,9 @@ export default async function AdminProducts() {
         <div className="p-6 border-b border-white/10 flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
-            <input 
-                type="text" 
-                placeholder="Search products..." 
+            <input
+                type="text"
+                placeholder="Search products..."
                 className="w-full bg-black/20 border border-white/10 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold/50 transition-colors"
             />
           </div>
@@ -76,12 +66,12 @@ export default async function AdminProducts() {
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden bg-white">
                             {product.image ? (
-                                <Image 
-                                  src={getProductImage(product.image, product.slug)} 
-                                  alt={product.name} 
-                                  width={48} 
-                                  height={48} 
-                                  className="object-cover w-full h-full" 
+                                <Image
+                                  src={getProductImage(product.image, product.slug)}
+                                  alt={product.name}
+                                  width={48}
+                                  height={48}
+                                  className="object-cover w-full h-full"
                                 />
                             ) : (
                                 <span className="text-xs text-black/20 font-serif">Img</span>
@@ -107,7 +97,7 @@ export default async function AdminProducts() {
                   </td>
                   <td className="p-6 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link 
+                        <Link
                             href={`/admin/products/${product.id}/edit`}
                             className="p-2 text-white/60 hover:text-gold hover:bg-white/10 rounded-lg transition-colors"
                         >
