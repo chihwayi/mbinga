@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       subtotal:          subtotal,
       delivery_cost:     deliveryCost,
       total_amount:      total,
-      currency:          'USD',
+      currency:          'ZAR',
       status:            'pending',
       is_test:           BOBPAY_CONFIG.isSandbox,
     })

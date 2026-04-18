@@ -44,3 +44,6 @@ next-env.d.ts
 storybook-static
 
 superbase
+live-bobpay-api-key
+server
+deploy.sh
