@@ -14,9 +14,17 @@ function getCartImage(image: string, slug?: string) {
 }
 
 export default function CheckoutPage() {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, isCartLoaded, getCartTotal, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (!isCartLoaded) {
+    return (
+      <div className="min-h-screen bg-obsidian text-white flex items-center justify-center p-4">
+        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
