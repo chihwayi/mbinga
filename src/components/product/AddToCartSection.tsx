@@ -49,13 +49,13 @@ export default function AddToCartSection({ product }: { product: Product }) {
         </span>
       </div>
 
-      <div className="flex items-center justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
         <div className="text-3xl font-serif text-obsidian">${product.price}</div>
 
         <div className="flex items-center gap-4">
           {/* Quantity Selector */}
           {!isOutOfStock && (
-            <div className="flex items-center border border-obsidian/20 h-12">
+            <div className="flex items-center border border-obsidian/20 h-12 flex-shrink-0">
               <button
                 onClick={handleDecrement}
                 className="w-10 h-full flex items-center justify-center text-obsidian/50 hover:text-gold hover:bg-obsidian/5 transition-colors"
@@ -79,7 +79,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
             onClick={handleAddToCart}
             disabled={isOutOfStock}
             className={clsx(
-              "h-12 px-8 uppercase tracking-widest font-semibold flex items-center gap-2 transition-all duration-300 border border-gold",
+              "h-12 flex-1 sm:flex-none px-4 sm:px-8 uppercase tracking-widest font-semibold flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base transition-all duration-300 border border-gold",
               isOutOfStock
                 ? "bg-obsidian/10 text-obsidian/30 cursor-not-allowed border-none"
                 : "bg-obsidian text-gold hover:bg-gold hover:text-obsidian"
@@ -89,7 +89,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
               "Sold Out"
             ) : (
               <>
-                Add to Cart <ShoppingBag size={18} />
+                Add to Cart <ShoppingBag size={18} className="flex-shrink-0" />
               </>
             )}
           </button>
