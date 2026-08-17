@@ -14,6 +14,7 @@ interface Product {
   category: string;
   notes: string[];
   image: string;
+  price: number;
 }
 
 function getProductImage(product: Product) {
@@ -162,8 +163,13 @@ export default function Collection({ products }: { products: Product[] }) {
                 <p className="text-cream/70 text-sm line-clamp-2 mb-4 font-light">
                   {product.tagline}
                 </p>
-                <div className="flex gap-2 text-[10px] text-gold/90 tracking-widest uppercase">
-                    {product.notes.slice(0, 3).join(" · ")}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-2 text-[10px] text-gold/90 tracking-widest uppercase">
+                      {product.notes.slice(0, 3).join(" · ")}
+                  </div>
+                  <span className="font-serif text-xl text-gold flex-shrink-0">
+                    ${product.price}
+                  </span>
                 </div>
               </div>
             </motion.div>
