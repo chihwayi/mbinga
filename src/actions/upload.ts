@@ -18,11 +18,8 @@ export async function uploadImage(formData: FormData): Promise<{ success: boolea
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // If Cloudinary credentials are not set, fall back to local storage (or fail gracefully)
-    // But for this task, we assume the user wants Cloudinary.
     if (!process.env.CLOUDINARY_API_SECRET) {
-        console.warn("Cloudinary env vars missing, falling back to local file system is not implemented in this version to force cloud usage.");
-        // We could implement a fallback, but let's stick to the request for "image storage option".
+      return { success: false, error: "Image uploads are not configured (missing Cloudinary credentials)" };
     }
 
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {

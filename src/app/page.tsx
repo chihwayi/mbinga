@@ -1,5 +1,6 @@
 import { getProducts } from "@/actions/products";
-import { supabase } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
+import { toSlideDTO } from "@/lib/heroSlide";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
@@ -11,16 +12,15 @@ import Contact from "@/components/home/Contact";
 import LazyLoadWrapper from "@/components/ui/LazyLoadWrapper";
 
 export default async function Home() {
-  const [products, slidesResult] = await Promise.all([
+  const [products, activeSlides] = await Promise.all([
     getProducts(),
-    supabase
-      .from("hero_slides")
-      .select("*")
-      .eq("is_active", true)
-      .order("order_index", { ascending: true }),
+    prisma.heroSlide.findMany({
+      where:   { isActive: true },
+      orderBy: { orderIndex: "asc" },
+    }),
   ])
 
-  const slides = slidesResult.data ?? []
+  const slides = activeSlides.map(toSlideDTO)
 
   return (
     <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-black">

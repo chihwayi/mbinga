@@ -1,11 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
+import { toSlideDTO } from "@/lib/heroSlide";
 import HeroSlidesManager from "@/components/admin/HeroSlidesManager";
 
 export default async function AdminHeroPage() {
-  const { data: slides } = await supabase
-    .from("hero_slides")
-    .select("*")
-    .order("order_index", { ascending: true });
+  const rows = await prisma.heroSlide.findMany({ orderBy: { orderIndex: "asc" } });
+  const slides = rows.map(toSlideDTO);
 
   return (
     <div className="space-y-8">

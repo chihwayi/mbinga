@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
 import {
   BOBPAY_CONFIG,
   verifyWebhookSignature,
@@ -33,12 +33,10 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 3. Idempotency ───────────────────────────────────────────────────────
-    const { data: existingLog } = await supabase
-      .from('webhook_logs')
-      .select('id')
-      .eq('event_id', payload.uuid)
-      .eq('processed', true)
-      .maybeSingle()
+    const existingLog = await prisma.webhookLog.findFirst({
+      where: { eventId: payload.uuid, processed: true },
+      select: { id: true },
+    })
 
     if (existingLog) {
       return NextResponse.json({ status: 'already_processed' })
@@ -52,38 +50,49 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 5. Find order ────────────────────────────────────────────────────────
-    const { data: order } = await supabase
-      .from('orders')
-      .select('id, total_amount, status')
-      .eq('custom_payment_id', payload.custom_payment_id)
-      .maybeSingle()
+    const order = await prisma.order.findUnique({
+      where: { customPaymentId: payload.custom_payment_id },
+      select: { id: true, amount: true, status: true, items: true },
+    })
 
     if (!order) {
       await logWebhook(payload, clientIp, ipValid, signatureValid, 'Order not found')
       return NextResponse.json({ status: 'order_not_found' })
     }
 
-    const amountMatch = Math.abs(payload.paid_amount - Number(order.total_amount)) < 0.02
+    const amountMatch = Math.abs(payload.paid_amount - Number(order.amount)) < 0.02
 
-    // ─── 6. Update order ──────────────────────────────────────────────────────
-    await supabase.from('orders').update({
-      status:              payload.status,
-      bobpay_uuid:         payload.uuid,
-      bobpay_short_ref:    payload.short_reference,
-      bobpay_payment_id:   payload.payment_id,
-      paid_amount:         payload.paid_amount,
-      payment_method:      payload.payment_method,
-      from_bank:           payload.from_bank || null,
-      is_test:             payload.is_test,
-      webhook_payload:     payload,
-      webhook_received_at: new Date().toISOString(),
-    }).eq('custom_payment_id', payload.custom_payment_id)
-
-    await logWebhook(
-      payload, clientIp, ipValid, signatureValid,
-      amountMatch ? null : `Amount mismatch: expected ${order.total_amount}, got ${payload.paid_amount}`,
-      order.id, true
-    )
+    // ─── 6. Update order + log webhook (atomic) ───────────────────────────────
+    await prisma.$transaction([
+      prisma.order.update({
+        where: { customPaymentId: payload.custom_payment_id },
+        data: {
+          status:            payload.status,
+          bobpayUuid:        payload.uuid,
+          bobpayShortRef:    payload.short_reference,
+          bobpayPaymentId:   String(payload.payment_id),
+          paidAmount:        payload.paid_amount,
+          paymentMethod:     payload.payment_method,
+          fromBank:          payload.from_bank || null,
+          isTest:            payload.is_test,
+          webhookPayload:    JSON.stringify(payload),
+          webhookReceivedAt: new Date(),
+        },
+      }),
+      prisma.webhookLog.create({
+        data: {
+          source:         'bobpay',
+          eventId:        payload.uuid || null,
+          orderId:        order.id,
+          status:         payload.status || null,
+          payload:        JSON.stringify(payload),
+          ipAddress:      clientIp,
+          signatureValid: signatureValid,
+          processed:      true,
+          error:          amountMatch ? null : `Amount mismatch: expected ${order.amount}, got ${payload.paid_amount}`,
+        },
+      }),
+    ])
 
     // ─── 7. Reduce stock on successful payment ────────────────────────────────
     if (payload.status === 'paid' && amountMatch) {
@@ -100,30 +109,28 @@ export async function POST(request: NextRequest) {
 
 async function reduceStock(orderId: string) {
   try {
-    const { data: order } = await supabase
-      .from('orders')
-      .select('items')
-      .eq('id', orderId)
-      .single()
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { items: true },
+    })
 
     if (!order?.items) return
 
-    const items = Array.isArray(order.items)
-      ? order.items as Array<{ id: string; quantity: number }>
-      : []
+    let items: Array<{ id: string; quantity: number }> = []
+    try {
+      const parsed = JSON.parse(order.items)
+      items = Array.isArray(parsed) ? parsed : []
+    } catch {
+      items = []
+    }
 
     for (const item of items) {
-      const { data: product } = await supabase
-        .from('products')
-        .select('stock')
-        .eq('id', item.id)
-        .single()
-
+      const product = await prisma.product.findUnique({ where: { id: item.id } })
       if (product) {
-        await supabase
-          .from('products')
-          .update({ stock: Math.max(0, product.stock - item.quantity) })
-          .eq('id', item.id)
+        await prisma.product.update({
+          where: { id: item.id },
+          data: { stock: Math.max(0, product.stock - item.quantity) },
+        })
       }
     }
   } catch (error) {
@@ -141,16 +148,18 @@ async function logWebhook(
   processed = false
 ) {
   try {
-    await supabase.from('webhook_logs').insert({
-      source:          'bobpay',
-      event_id:        payload.uuid || null,
-      order_id:        orderId || null,
-      status:          payload.status || null,
-      payload:         payload,
-      ip_address:      ip,
-      signature_valid: sigValid,
-      processed,
-      error,
+    await prisma.webhookLog.create({
+      data: {
+        source:         'bobpay',
+        eventId:        payload.uuid || null,
+        orderId:        orderId || null,
+        status:         payload.status || null,
+        payload:        JSON.stringify(payload),
+        ipAddress:      ip,
+        signatureValid: sigValid,
+        processed,
+        error,
+      },
     })
   } catch (e) {
     console.error('Failed to log webhook:', e)

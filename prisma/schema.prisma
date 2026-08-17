@@ -21,8 +21,8 @@ model Product {
   category    String
   price       Float
   stock       Int
-  notes       String   // Stored as JSON string or comma-separated
-  ingredients String   // Stored as JSON string or comma-separated
+  notes       String // Stored as JSON string or comma-separated
+  ingredients String // Stored as JSON string or comma-separated
   image       String
   accentColor String
   createdAt   DateTime @default(now())
@@ -30,15 +30,58 @@ model Product {
 }
 
 model Order {
-  id        String      @id @default(cuid())
-  customer  String
-  email     String?
-  phone     String
-  address   String?
-  items     String      // Description of items
-  amount    Float
-  status    String      // Pending, Paid, Shipped
-  date      DateTime    @default(now())
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id       String   @id @default(cuid())
+  customer String
+  email    String?
+  phone    String
+  address  String?
+  items    String // Description of items
+  amount   Float
+  status   String // Pending, Paid, Shipped
+  date     DateTime @default(now())
+
+  customPaymentId   String?   @unique
+  subtotal          Float?
+  deliveryCost      Float?
+  currency          String    @default("ZAR")
+  paidAmount        Float?
+  paymentMethod     String?
+  fromBank          String?
+  bobpayUuid        String?
+  bobpayShortRef    String?
+  bobpayPaymentId   String?
+  isTest            Boolean   @default(false)
+  webhookPayload    String? // Stored as JSON string
+  webhookReceivedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HeroSlide {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String
+  imageUrl   String
+  ctaText    String
+  ctaLink    String
+  orderIndex Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model WebhookLog {
+  id             String   @id @default(cuid())
+  source         String
+  eventId        String?
+  orderId        String?
+  status         String?
+  payload        String // Stored as JSON string
+  ipAddress      String
+  signatureValid Boolean
+  processed      Boolean  @default(false)
+  error          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

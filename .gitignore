@@ -47,3 +47,6 @@ superbase
 live-bobpay-api-key
 server
 deploy.sh
+
+# local SQLite journal (transient)
+prisma/*.db-journal

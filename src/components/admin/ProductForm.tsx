@@ -41,6 +41,8 @@ export default function ProductForm({ product }: { product?: Product }) {
   const isEditing = !!product;
   const [imageUrl, setImageUrl] = useState(product?.image || "");
   const [isUploading, setIsUploading] = useState(false);
+  const [showImageUrlInput, setShowImageUrlInput] = useState(false);
+  const [accentColor, setAccentColor] = useState(product?.accentColor || "#D4AF37");
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -203,55 +205,88 @@ export default function ProductForm({ product }: { product?: Product }) {
 
             <div>
                 <label className="block text-white/60 text-sm mb-2">Product Image</label>
+                <input type="hidden" name="image" value={imageUrl} required />
                 <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      name="image"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://... or /uploads/..."
-                      required
-                      className="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
-                    />
-                    <label className="cursor-pointer bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg px-4 py-3 flex items-center gap-2 transition-colors">
-                      <Upload size={18} />
-                      <span className="hidden md:inline">{isUploading ? "Uploading..." : "Upload"}</span>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
+                  {imageUrl ? (
+                    <div className="relative w-full h-48 bg-black/20 rounded-lg overflow-hidden border border-white/5 group">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imageUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <label className="cursor-pointer bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg px-4 py-2 flex items-center gap-2 transition-colors">
+                          <Upload size={16} />
+                          {isUploading ? "Uploading..." : "Replace"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            disabled={isUploading}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setImageUrl("")}
+                          className="bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg px-4 py-2 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="cursor-pointer block">
+                      <div className="w-full bg-black/20 border border-dashed border-white/20 rounded-lg p-8 text-center hover:border-gold/50 transition-colors">
+                        <Upload size={20} className="mx-auto mb-2 text-white/40" />
+                        <p className="text-white/40 text-sm">
+                          {isUploading ? "Uploading..." : "Click to upload an image"}
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
                         onChange={handleFileUpload}
                         disabled={isUploading}
                       />
                     </label>
-                  </div>
-                  {imageUrl && (
-                    <div className="relative w-full h-48 bg-black/20 rounded-lg overflow-hidden border border-white/5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={imageUrl} 
-                        alt="Preview" 
-                        className="w-full h-full object-cover opacity-80"
-                      />
-                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowImageUrlInput(v => !v)}
+                    className="text-xs text-white/40 hover:text-gold transition-colors"
+                  >
+                    {showImageUrlInput ? "Hide URL field" : "Or paste an image URL instead"}
+                  </button>
+                  {showImageUrlInput && (
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50"
+                    />
                   )}
                 </div>
             </div>
 
             <div>
                 <label className="block text-white/60 text-sm mb-2">Accent Color (Hex)</label>
+                <input type="hidden" name="accentColor" value={accentColor} />
                 <div className="flex gap-2">
                     <input
                     type="color"
-                    name="accentColor"
-                    defaultValue={product?.accentColor || "#D4AF37"}
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
                     className="h-[50px] w-[50px] bg-transparent border-none cursor-pointer"
                     />
                     <input
                     type="text"
-                    name="accentColor"
-                    defaultValue={product?.accentColor || "#D4AF37"}
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
                     required
                     className="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
                     />

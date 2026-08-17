@@ -1,15 +1,19 @@
-import { supabase } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 
 export default async function AdminDashboard() {
-  const [{ count: productCount }, { data: orders }, { data: lowStock }] = await Promise.all([
-    supabase.from("products").select("*", { count: "exact", head: true }),
-    supabase.from("orders").select("*").order("created_at", { ascending: false }),
-    supabase.from("products").select("id,name,category,stock").lte("stock", 5).order("stock", { ascending: true }).limit(5),
+  const [productCount, allOrders, lowStock] = await Promise.all([
+    prisma.product.count(),
+    prisma.order.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.product.findMany({
+      where:   { stock: { lte: 5 } },
+      select:  { id: true, name: true, category: true, stock: true },
+      orderBy: { stock: "asc" },
+      take:    5,
+    }),
   ])
 
-  const allOrders = orders ?? []
-  const totalRevenue     = allOrders.reduce((acc, o) => acc + Number(o.total_amount ?? o.amount ?? 0), 0)
+  const totalRevenue     = allOrders.reduce((acc, o) => acc + Number(o.amount ?? 0), 0)
   const activeOrdersCount = allOrders.filter(o => o.status === 'Pending' || o.status === 'pending' || o.status === 'paid').length
 
   const stats = [
@@ -20,12 +24,12 @@ export default async function AdminDashboard() {
   ]
 
   const recentOrders = allOrders.slice(0, 5).map(o => ({
-    id:       o.id as string,
-    customer: (o.customer_name ?? o.customer) as string,
-    items:    typeof o.items === "string" ? o.items : JSON.stringify(o.items),
-    total:    `$${Number(o.total_amount ?? o.amount ?? 0)}`,
-    status:   o.status as string,
-    date:     new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    id:       o.id,
+    customer: o.customer,
+    items:    o.items,
+    total:    `$${Number(o.amount ?? 0)}`,
+    status:   o.status,
+    date:     o.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
   }))
 
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
+import { toSlideDTO } from "@/lib/heroSlide";
 
 // POST /api/admin/hero-slides — create a new slide
 export async function POST(request: Request) {
@@ -10,15 +11,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "image_url is required" }, { status: 400 });
   }
 
-  const { data: slide, error } = await supabase
-    .from("hero_slides")
-    .insert({ title, subtitle, image_url, cta_text, cta_link, order_index, is_active })
-    .select()
-    .single();
+  const slide = await prisma.heroSlide.create({
+    data: {
+      title,
+      subtitle,
+      imageUrl:   image_url,
+      ctaText:    cta_text,
+      ctaLink:    cta_link,
+      orderIndex: order_index,
+      isActive:   is_active,
+    },
+  });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ slide }, { status: 201 });
+  return NextResponse.json({ slide: toSlideDTO(slide) }, { status: 201 });
 }

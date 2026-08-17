@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
 import { BOBPAY_CONFIG, createPaymentLink, generateOrderId } from '@/lib/bobpay'
 
 interface CartItem {
@@ -57,22 +57,24 @@ export async function POST(request: NextRequest) {
     const cancelUrl  = `${baseUrl}/payment/cancel?order_id=${customPaymentId}`
 
     // ─── Save order (status: pending) ─────────────────────────────────────────
-    const { error: dbError } = await supabase.from('orders').insert({
-      custom_payment_id: customPaymentId,
-      customer_name:     customerName,
-      customer_email:    customerEmail,
-      customer_phone:    customerPhone,
-      delivery_address:  deliveryAddress,
-      items:             items,
-      subtotal:          subtotal,
-      delivery_cost:     deliveryCost,
-      total_amount:      total,
-      currency:          'ZAR',
-      status:            'pending',
-      is_test:           BOBPAY_CONFIG.isSandbox,
-    })
-
-    if (dbError) {
+    try {
+      await prisma.order.create({
+        data: {
+          customPaymentId,
+          customer:     customerName,
+          email:        customerEmail,
+          phone:        customerPhone,
+          address:      deliveryAddress,
+          items:        JSON.stringify(items),
+          subtotal,
+          deliveryCost,
+          amount:       total,
+          currency:     'ZAR',
+          status:       'pending',
+          isTest:       BOBPAY_CONFIG.isSandbox,
+        },
+      })
+    } catch (dbError) {
       console.error('Failed to save order:', dbError)
     }
 

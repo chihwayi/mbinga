@@ -1,6 +1,6 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 
@@ -8,13 +8,8 @@ export async function getOrders() {
   const session = await auth();
   if (!session) return { success: false, error: "Unauthorized" };
 
-  const { data, error } = await supabase
-    .from("orders")
-    .select("*")
-    .order("created_at", { ascending: false })
-
-  if (error) return { success: false, error: error.message }
-  return { success: true, orders: (data ?? []).map(mapOrder) }
+  const orders = await prisma.order.findMany({ orderBy: { createdAt: "desc" } })
+  return { success: true, orders }
 }
 
 export async function createOrder(data: {
@@ -29,38 +24,29 @@ export async function createOrder(data: {
   try {
     const customPaymentId = `MB-MANUAL-${Date.now()}`
 
-    const { data: order, error } = await supabase
-      .from("orders")
-      .insert({
-        custom_payment_id: customPaymentId,
-        customer_name:     data.customer,
-        customer_phone:    data.phone,
-        customer_email:    data.email   || null,
-        delivery_address:  data.address || null,
-        items:             data.items,
-        subtotal:          data.amount,
-        total_amount:      data.amount,
-        status:            "Pending",
-      })
-      .select()
-      .single()
-
-    if (error) throw new Error(error.message)
+    const order = await prisma.order.create({
+      data: {
+        customPaymentId,
+        customer:  data.customer,
+        phone:     data.phone,
+        email:     data.email   || null,
+        address:   data.address || null,
+        items:     data.items,
+        subtotal:  data.amount,
+        amount:    data.amount,
+        status:    "Pending",
+      },
+    })
 
     // Reduce stock for each cart item
     if (data.cartItems && data.cartItems.length > 0) {
       for (const item of data.cartItems) {
-        const { data: product } = await supabase
-          .from("products")
-          .select("stock")
-          .eq("id", item.productId)
-          .single()
-
+        const product = await prisma.product.findUnique({ where: { id: item.productId } })
         if (product) {
-          await supabase
-            .from("products")
-            .update({ stock: Math.max(0, product.stock - item.quantity) })
-            .eq("id", item.productId)
+          await prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: Math.max(0, product.stock - item.quantity) },
+          })
         }
       }
     }
@@ -70,7 +56,7 @@ export async function createOrder(data: {
     revalidatePath("/admin/products");
     revalidatePath("/");
 
-    return { success: true, order: mapOrder(order) }
+    return { success: true, order }
   } catch (error) {
     console.error("Failed to create order:", error)
     return { success: false, error: "Failed to create order" }
@@ -81,12 +67,7 @@ export async function updateOrderStatus(id: string, status: string) {
   const session = await auth();
   if (!session) return { success: false, error: "Unauthorized" };
 
-  const { error } = await supabase
-    .from("orders")
-    .update({ status })
-    .eq("id", id)
-
-  if (error) return { success: false, error: error.message }
+  await prisma.order.update({ where: { id }, data: { status } })
 
   revalidatePath("/admin/orders");
   revalidatePath("/admin");
@@ -97,28 +78,9 @@ export async function deleteOrder(id: string) {
   const session = await auth();
   if (!session) return { success: false, error: "Unauthorized" };
 
-  const { error } = await supabase.from("orders").delete().eq("id", id)
-  if (error) return { success: false, error: error.message }
+  await prisma.order.delete({ where: { id } })
 
   revalidatePath("/admin/orders");
   revalidatePath("/admin");
   return { success: true }
-}
-
-// ─── Row → TypeScript shape ───────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapOrder(row: any) {
-  return {
-    id:              row.id as string,
-    customer:        (row.customer_name ?? row.customer) as string,
-    email:           row.customer_email as string | undefined,
-    phone:           row.customer_phone as string,
-    address:         row.delivery_address as string | undefined,
-    items:           typeof row.items === "string" ? row.items : JSON.stringify(row.items),
-    amount:          Number(row.total_amount ?? row.amount),
-    status:          row.status as string,
-    date:            row.created_at ? new Date(row.created_at) : new Date(),
-    customPaymentId: row.custom_payment_id as string | undefined,
-    isTest:          Boolean(row.is_test),
-  }
 }
