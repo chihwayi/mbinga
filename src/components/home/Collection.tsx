@@ -129,7 +129,7 @@ export default function Collection({ products }: { products: Product[] }) {
           >
             <Link href={`/product/${product.slug}`} className="block w-full h-full">
               <motion.div
-                className="min-w-[300px] md:min-w-[400px] h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
+                className="min-w-[240px] sm:min-w-[300px] md:min-w-[400px] h-[380px] sm:h-[500px] md:h-[600px] relative border border-gold/30 overflow-hidden transition-all duration-500 hover:border-gold hover:shadow-[0_20px_60px_rgba(212,175,55,0.15)] bg-obsidian"
               >
               {/* Product Image */}
               {getProductImage(product) && (
@@ -153,21 +153,21 @@ export default function Collection({ products }: { products: Product[] }) {
               
               <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-transparent opacity-90" />
 
-              <div className="absolute bottom-0 left-0 right-0 p-8 z-10 transform transition-transform duration-500 group-hover:-translate-y-2">
-                <span className="inline-block px-3 py-1 mb-4 border border-gold text-gold text-[10px] uppercase tracking-widest">
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 z-10 transform transition-transform duration-500 group-hover:-translate-y-2">
+                <span className="inline-block px-2.5 py-1 mb-3 sm:mb-4 border border-gold text-gold text-[9px] sm:text-[10px] uppercase tracking-widest">
                   {product.category}
                 </span>
-                <h3 className="font-serif text-3xl md:text-4xl text-cream mb-2 group-hover:text-gold transition-colors">
+                <h3 className="font-serif text-xl sm:text-3xl md:text-4xl text-cream mb-2 group-hover:text-gold transition-colors">
                   {product.name}
                 </h3>
-                <p className="text-cream/70 text-sm line-clamp-2 mb-4 font-light">
+                <p className="text-cream/70 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 font-light">
                   {product.tagline}
                 </p>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex gap-2 text-[10px] text-gold/90 tracking-widest uppercase">
+                <div className="flex items-center justify-between mb-2 sm:mb-4">
+                  <div className="flex gap-2 text-[9px] sm:text-[10px] text-gold/90 tracking-widest uppercase truncate">
                       {product.notes.slice(0, 3).join(" · ")}
                   </div>
-                  <span className="font-serif text-xl text-gold flex-shrink-0">
+                  <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2">
                     ${product.price}
                   </span>
                 </div>
