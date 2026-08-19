@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import clsx from "clsx";
 
 export default function AddToCartSection({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { formatPrice } = useCurrency();
   const isOutOfStock = product.stock === 0;
 
   const handleIncrement = () => {
@@ -50,7 +52,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-        <div className="text-3xl font-serif text-obsidian">${product.price}</div>
+        <div className="text-3xl font-serif text-obsidian">{formatPrice(product.price)}</div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {/* Quantity Selector */}

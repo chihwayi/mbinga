@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import CurrencyToggle from "./CurrencyToggle";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -63,18 +64,21 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <button
-          onClick={toggleCart}
-          className="text-gold hover:text-gold-light transition-transform hover:scale-110 relative focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian"
-          aria-label={`Shopping cart with ${itemCount} items`}
-        >
-          <ShoppingBag size={24} />
-          {itemCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-gold text-obsidian text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              {itemCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-4">
+          <CurrencyToggle />
+          <button
+            onClick={toggleCart}
+            className="text-gold hover:text-gold-light transition-transform hover:scale-110 relative focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-obsidian"
+            aria-label={`Shopping cart with ${itemCount} items`}
+          >
+            <ShoppingBag size={24} />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-gold text-obsidian text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </button>
+        </div>
       </motion.nav>
 
       {/* Mobile Menu Overlay */}

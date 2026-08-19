@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, Libre_Bodoni } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import "./globals.css";
 
@@ -43,10 +44,12 @@ export default function RootLayout({
       <body
         className={`${cormorantGaramond.variable} ${inter.variable} ${libreBodoni.variable} antialiased bg-black text-cream`}
       >
-        <CartProvider>
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <CurrencyProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

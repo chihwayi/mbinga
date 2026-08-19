@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -22,6 +23,7 @@ function getCartImage(image: string, slug?: string) {
 
 export default function CartDrawer() {
   const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const { formatPrice } = useCurrency();
   const isClient = typeof window !== "undefined";
 
   return (
@@ -100,7 +102,7 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <p className="text-sm text-gray-400 mt-1">
-                          ${item.product.price}
+                          {formatPrice(item.product.price)}
                         </p>
                       </div>
 
@@ -127,7 +129,7 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <div className="font-bold text-gold/90">
-                          ${item.product.price * item.quantity}
+                          {formatPrice(item.product.price * item.quantity)}
                         </div>
                       </div>
                     </div>
@@ -142,11 +144,11 @@ export default function CartDrawer() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span>${getCartTotal()}</span>
+                    <span>{formatPrice(getCartTotal())}</span>
                   </div>
                   <div className="flex justify-between text-xl font-serif text-gold">
                     <span>Total</span>
-                    <span>${getCartTotal()}</span>
+                    <span>{formatPrice(getCartTotal())}</span>
                   </div>
                 </div>
                 <Link 

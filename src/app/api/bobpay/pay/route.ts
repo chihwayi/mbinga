@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { BOBPAY_CONFIG, createPaymentLink, generateOrderId } from '@/lib/bobpay'
+import { getUsdToZarRate } from '@/lib/exchangeRate'
 
 interface CartItem {
   id:    string
@@ -35,9 +36,14 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── Totals ───────────────────────────────────────────────────────────────
-    const subtotal     = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const deliveryCost = 0  // update when delivery settings are configured
-    const total        = subtotal + deliveryCost
+    // Product prices are stored/quoted in USD, but BobPay only settles in ZAR —
+    // convert using a live, server-fetched rate so the actual charge is always correct
+    // regardless of which currency the customer had selected for display.
+    const subtotalUsd  = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const rate          = await getUsdToZarRate()
+    const subtotal      = subtotalUsd * rate
+    const deliveryCost  = 0  // update when delivery settings are configured
+    const total         = subtotal + deliveryCost
 
     // ─── Order ID ─────────────────────────────────────────────────────────────
     const customPaymentId = generateOrderId()

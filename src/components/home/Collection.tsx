@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useAnimation, useMotionValue } from "framer-motion";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface Product {
   id: string;
@@ -32,6 +33,7 @@ function getProductImage(product: Product) {
 }
 
 export default function Collection({ products }: { products: Product[] }) {
+  const { formatPrice } = useCurrency();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
   const controls = useAnimation();
@@ -168,7 +170,7 @@ export default function Collection({ products }: { products: Product[] }) {
                       {product.notes.slice(0, 3).join(" · ")}
                   </div>
                   <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2">
-                    ${product.price}
+                    {formatPrice(product.price)}
                   </span>
                 </div>
               </div>
