@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import Link from "next/link";
@@ -20,7 +20,17 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isCartLoaded) {
+  // Grace period after the cart reports "loaded" before we trust an empty
+  // cart as genuinely empty — guards against any late-settling read (slow
+  // devices, some mobile browsers) briefly flashing this state incorrectly.
+  const [graceElapsed, setGraceElapsed] = useState(false);
+  useEffect(() => {
+    if (!isCartLoaded) return;
+    const timer = setTimeout(() => setGraceElapsed(true), 400);
+    return () => clearTimeout(timer);
+  }, [isCartLoaded]);
+
+  if (!isCartLoaded || (cart.length === 0 && !graceElapsed)) {
     return (
       <div className="min-h-screen bg-obsidian text-white flex items-center justify-center p-4">
         <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
