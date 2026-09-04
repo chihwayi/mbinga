@@ -11,6 +11,11 @@ import Journal from "@/components/home/Journal";
 import Contact from "@/components/home/Contact";
 import LazyLoadWrapper from "@/components/ui/LazyLoadWrapper";
 
+// Queries the DB directly, which isn't available during the Docker build
+// (the persistent volume is only mounted at runtime), so this can't be
+// statically prerendered.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [products, activeSlides] = await Promise.all([
     getProducts(),
