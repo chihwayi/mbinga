@@ -43,8 +43,8 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gold mb-1">WhatsApp</h4>
-                <a href="https://wa.me/263770000000" className="text-xl font-serif text-cream hover:text-gold transition-colors">
-                  +263 77 000 0000
+                <a href="https://wa.me/27664570911" className="text-xl font-serif text-cream hover:text-gold transition-colors">
+                  +27 66 457 0911
                 </a>
               </div>
             </div>
