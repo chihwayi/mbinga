@@ -1,5 +1,10 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
+// Admin pages are behind auth and always need fresh data, so they should
+// never be statically prerendered at build time (which would also require
+// DB access during the Docker build, before the runtime volume is mounted).
+export const dynamic = "force-dynamic";
+
 export default function AdminLayout({
   children,
 }: {
