@@ -1,4 +1,5 @@
 import { getProducts } from "@/actions/products";
+import { getSettings } from "@/actions/settings";
 import { prisma } from "@/lib/prisma";
 import { toSlideDTO } from "@/lib/heroSlide";
 import Navbar from "@/components/layout/Navbar";
@@ -17,12 +18,13 @@ import LazyLoadWrapper from "@/components/ui/LazyLoadWrapper";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, activeSlides] = await Promise.all([
+  const [products, activeSlides, settings] = await Promise.all([
     getProducts(),
     prisma.heroSlide.findMany({
       where:   { isActive: true },
       orderBy: { orderIndex: "asc" },
     }),
+    getSettings(),
   ])
 
   const slides = activeSlides.map(toSlideDTO)
@@ -40,7 +42,7 @@ export default async function Home() {
         <Journal />
       </LazyLoadWrapper>
       <LazyLoadWrapper>
-        <Contact />
+        <Contact email={settings.contact_email} whatsapp={settings.contact_whatsapp} />
       </LazyLoadWrapper>
       <Footer />
     </main>

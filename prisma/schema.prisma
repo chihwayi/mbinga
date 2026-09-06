@@ -19,6 +19,13 @@ model Admin {
   updatedAt    DateTime @updatedAt
 }
 
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String

@@ -3,7 +3,14 @@
 import { motion } from "framer-motion";
 import { Mail, Phone, Instagram, Facebook } from "lucide-react";
 
-export default function Contact() {
+interface ContactProps {
+  email: string;
+  whatsapp: string;
+}
+
+export default function Contact({ email, whatsapp }: ContactProps) {
+  const whatsappDigits = whatsapp.replace(/[^0-9]/g, "");
+
   return (
     <section id="contact" className="py-24 px-8 bg-gradient-to-b from-obsidian to-black border-t border-gold/10">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16">
@@ -31,8 +38,8 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gold mb-1">Email</h4>
-                <a href="mailto:concierge@mbinga.com" className="text-xl font-serif text-cream hover:text-gold transition-colors">
-                  concierge@mbinga.com
+                <a href={`mailto:${email}`} className="text-xl font-serif text-cream hover:text-gold transition-colors">
+                  {email}
                 </a>
               </div>
             </div>
@@ -43,8 +50,8 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gold mb-1">WhatsApp</h4>
-                <a href="https://wa.me/27664570911" className="text-xl font-serif text-cream hover:text-gold transition-colors">
-                  +27 66 457 0911
+                <a href={`https://wa.me/${whatsappDigits}`} className="text-xl font-serif text-cream hover:text-gold transition-colors">
+                  {whatsapp}
                 </a>
               </div>
             </div>
