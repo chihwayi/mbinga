@@ -1,12 +1,6 @@
 "use server";
 
-import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 
 export async function uploadImage(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
@@ -14,26 +8,18 @@ export async function uploadImage(formData: FormData): Promise<{ success: boolea
     if (!file) {
       return { success: false, error: "No file provided" };
     }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    if (!process.env.CLOUDINARY_API_SECRET) {
-      return { success: false, error: "Image uploads are not configured (missing Cloudinary credentials)" };
+    if (!file.type.startsWith("image/")) {
+      return { success: false, error: "File must be an image" };
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return { success: false, error: "Image must be smaller than 3MB" };
     }
 
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: "mbinga-products" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result as { secure_url: string });
-        }
-      );
-      uploadStream.end(buffer);
-    });
+    const arrayBuffer = await file.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    return { success: true, url: result.secure_url };
+    return { success: true, url: dataUri };
   } catch (error) {
     console.error("Upload error:", error);
     return { success: false, error: "Failed to upload image" };
