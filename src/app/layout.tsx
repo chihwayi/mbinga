@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter, Libre_Bodoni } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import CartDrawer from "@/components/cart/CartDrawer";
+import BackgroundAudio from "@/components/layout/BackgroundAudio";
 import "./globals.css";
 
 const cormorantGaramond = Cormorant_Garamond({
@@ -50,6 +51,7 @@ export default function RootLayout({
             <CartDrawer />
           </CartProvider>
         </CurrencyProvider>
+        <BackgroundAudio />
       </body>
     </html>
   );
