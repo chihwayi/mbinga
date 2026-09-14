@@ -7,6 +7,7 @@ import {
   isValidBobPayIP,
   type BobPayWebhookPayload,
 } from '@/lib/bobpay'
+import { sendOrderNotificationEmails } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   let payload: BobPayWebhookPayload | null = null
@@ -111,12 +112,22 @@ async function reduceStock(orderId: string) {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { items: true },
+      select: {
+        items: true,
+        customPaymentId: true,
+        customer: true,
+        email: true,
+        phone: true,
+        address: true,
+        subtotal: true,
+        deliveryCost: true,
+        amount: true,
+      },
     })
 
     if (!order?.items) return
 
-    let items: Array<{ id: string; quantity: number }> = []
+    let items: Array<{ id: string; name: string; price: number; quantity: number }> = []
     try {
       const parsed = JSON.parse(order.items)
       items = Array.isArray(parsed) ? parsed : []
@@ -133,6 +144,18 @@ async function reduceStock(orderId: string) {
         })
       }
     }
+
+    await sendOrderNotificationEmails({
+      customPaymentId: order.customPaymentId ?? '',
+      customerName:    order.customer,
+      customerEmail:   order.email ?? '',
+      customerPhone:   order.phone,
+      address:         order.address,
+      items,
+      subtotal:        order.subtotal,
+      deliveryCost:    order.deliveryCost,
+      totalAmount:     order.amount,
+    })
   } catch (error) {
     console.error('Error reducing stock:', error)
   }
