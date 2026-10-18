@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createProduct, updateProduct } from "@/actions/products";
-import { uploadImage } from "@/actions/upload";
+import { uploadImage, uploadImageFromUrl } from "@/actions/upload";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
@@ -42,6 +42,8 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [imageUrl, setImageUrl] = useState(product?.image || "");
   const [isUploading, setIsUploading] = useState(false);
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
+  const [pastedUrl, setPastedUrl] = useState("");
+  const [isFetchingUrl, setIsFetchingUrl] = useState(false);
   const [accentColor, setAccentColor] = useState(product?.accentColor || "#D4AF37");
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +61,20 @@ export default function ProductForm({ product }: { product?: Product }) {
       alert("Failed to upload image");
     }
     setIsUploading(false);
+  };
+
+  const handleFetchUrl = async () => {
+    if (!pastedUrl.trim()) return;
+    setIsFetchingUrl(true);
+    const result = await uploadImageFromUrl(pastedUrl.trim());
+    if (result.success && result.url) {
+      setImageUrl(result.url);
+      setPastedUrl("");
+      setShowImageUrlInput(false);
+    } else {
+      alert(result.error || "Failed to fetch image from that URL");
+    }
+    setIsFetchingUrl(false);
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -262,13 +278,24 @@ export default function ProductForm({ product }: { product?: Product }) {
                     {showImageUrlInput ? "Hide URL field" : "Or paste an image URL instead"}
                   </button>
                   {showImageUrlInput && (
-                    <input
-                      type="text"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://..."
-                      className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={pastedUrl}
+                        onChange={(e) => setPastedUrl(e.target.value)}
+                        placeholder="https://..."
+                        disabled={isFetchingUrl}
+                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleFetchUrl}
+                        disabled={isFetchingUrl || !pastedUrl.trim()}
+                        className="bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg px-4 py-2 transition-colors disabled:opacity-50"
+                      >
+                        {isFetchingUrl ? "Fetching…" : "Use"}
+                      </button>
+                    </div>
                   )}
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, Libre_Bodoni } from "next/font/google";
+import { Cormorant_Garamond, Inter, Libre_Bodoni, Montserrat, Cinzel } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -26,6 +26,20 @@ const libreBodoni = Libre_Bodoni({
   display: "swap",
 });
 
+const montserrat = Montserrat({
+  variable: "--font-montserrat-raw",
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  display: "swap",
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel-raw",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "MBINGA | Luxury African Fragrance House",
   description: "Born from the heart of Africa, MBINGA is a luxury fragrance house defined by presence, refinement, and quiet authority.",
@@ -43,7 +57,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${cormorantGaramond.variable} ${inter.variable} ${libreBodoni.variable} antialiased bg-black text-cream`}
+        className={`${cormorantGaramond.variable} ${inter.variable} ${libreBodoni.variable} ${montserrat.variable} ${cinzel.variable} antialiased bg-black text-cream`}
       >
         <CurrencyProvider>
           <CartProvider>

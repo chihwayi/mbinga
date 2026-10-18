@@ -35,41 +35,107 @@ export default function Hero({ slides = [] }: Props) {
   }, [activeSlides.length]);
 
   if (!hasSlides) {
-    // Fallback: original logo-only hero
+    // Default hero: two signature bottles with a golden spotlight glow,
+    // replacing the old logo-only version that left a large empty gap
+    // between the opening statement and the scroll prompt.
     return (
       <section
-        className="relative h-screen flex flex-col justify-center items-center overflow-hidden"
+        className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden py-24"
         role="banner"
         aria-label="MBINGA Luxury Fragrances - Born in the Heart of Africa"
       >
+        {/* Ambient glow */}
         <motion.div
           className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_var(--color-obsidian)_70%)] opacity-10"
           animate={{ opacity: [0.1, 0.15, 0.1], scale: [1, 1.05, 1] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="relative z-10 text-center px-4 flex flex-col items-center">
+
+        <div className="relative z-10 flex flex-col items-center px-4 w-full max-w-6xl">
+          {/* Logo */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="relative w-[280px] h-[100px] md:w-[600px] md:h-[200px] mb-8"
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="relative w-[140px] h-[50px] md:w-[180px] md:h-[64px] mb-6 md:mb-8"
             style={{ filter: "drop-shadow(0 0 20px rgba(212, 175, 55, 0.3))" }}
           >
             <Image src="/images/logo.svg" alt="MBINGA" fill className="object-contain" priority />
           </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1.5 }}
-            className="font-serif text-lg md:text-xl font-light tracking-widest uppercase text-gold/70"
-            role="heading"
-            aria-level={2}
+
+          {/* Two signature bottles */}
+          <div className="relative w-full flex items-center justify-center mb-6 md:mb-10">
+            <div className="flex items-end justify-center">
+              {/* Left bottle — Gafa Intense */}
+              <motion.div
+                initial={{ opacity: 0, x: -40, y: 20 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 1.4, ease: "easeOut", delay: 0.2 }}
+                className="relative w-[150px] h-[200px] sm:w-[220px] sm:h-[290px] md:w-[280px] md:h-[370px] -mr-6 sm:-mr-10 z-10"
+              >
+                <div
+                  className="absolute inset-0 blur-3xl rounded-full"
+                  style={{ background: "radial-gradient(circle, rgba(212,175,55,0.25) 0%, transparent 70%)" }}
+                />
+                <Image
+                  src="/images/gafa-intense.png"
+                  alt="MBINGA Gafa Intense"
+                  fill
+                  className="object-contain drop-shadow-[0_0_40px_rgba(212,175,55,0.15)]"
+                  priority
+                />
+              </motion.div>
+
+              {/* Right bottle — Goldess */}
+              <motion.div
+                initial={{ opacity: 0, x: 40, y: 20 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 1.4, ease: "easeOut", delay: 0.4 }}
+                className="relative w-[150px] h-[200px] sm:w-[220px] sm:h-[290px] md:w-[280px] md:h-[370px]"
+              >
+                <div
+                  className="absolute inset-0 blur-3xl rounded-full"
+                  style={{ background: "radial-gradient(circle, rgba(212,175,55,0.35) 0%, transparent 70%)" }}
+                />
+                <Image
+                  src="/images/goldess.png"
+                  alt="MBINGA Goldess"
+                  fill
+                  className="object-contain drop-shadow-[0_0_50px_rgba(212,175,55,0.25)]"
+                  priority
+                />
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Statement */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 1 }}
+            className="text-center flex flex-col items-center gap-3 md:gap-4"
           >
-            BORN IN THE HEART OF AFRICA
-          </motion.p>
+            <h1 className="font-cinzel font-bold text-2xl sm:text-3xl md:text-5xl text-cream leading-tight tracking-wide">
+              Presence. Power. Influence.
+            </h1>
+            <p className="font-montserrat font-extrabold text-xs sm:text-sm md:text-base tracking-[0.2em] uppercase text-gold">
+              Born in the Heart of Africa
+            </p>
+            <p className="text-cream/60 text-sm md:text-base font-light max-w-lg mt-1">
+              Crafted to make a statement. A luxury fragrance house defined by quiet authority.
+            </p>
+
+            <Link
+              href="/#collection"
+              className="mt-5 md:mt-7 px-10 py-4 bg-obsidian border border-gold text-gold font-bold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300 text-sm"
+            >
+              Discover Your Scent
+            </Link>
+          </motion.div>
         </div>
+
         <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-gold text-xs tracking-widest uppercase"
+          className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 text-gold text-xs tracking-widest uppercase"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -131,7 +197,7 @@ export default function Hero({ slides = [] }: Props) {
             className="flex flex-col items-center gap-4"
           >
             {slide.title && (
-              <h1 className="font-serif text-4xl md:text-6xl text-white leading-tight">
+              <h1 className="font-cinzel font-bold text-4xl md:text-6xl text-white leading-tight">
                 {slide.title}
               </h1>
             )}

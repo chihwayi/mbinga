@@ -31,7 +31,7 @@ export default function BrandEssence() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-serif text-4xl md:text-5xl text-center mb-16 text-gold tracking-widest"
+          className="font-montserrat font-extrabold text-3xl md:text-5xl text-center mb-16 text-gold tracking-wide"
         >
           The MBINGA Philosophy
         </motion.h2>
