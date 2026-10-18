@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import BrandEssence from "@/components/home/BrandEssence";
 import Collection from "@/components/home/Collection";
+import Films from "@/components/home/Films";
 import Story from "@/components/home/Story";
 import Journal from "@/components/home/Journal";
 import Contact from "@/components/home/Contact";
@@ -35,6 +36,9 @@ export default async function Home() {
       <Hero slides={slides} />
       <BrandEssence />
       <Collection products={products} />
+      <LazyLoadWrapper>
+        <Films />
+      </LazyLoadWrapper>
       <LazyLoadWrapper>
         <Story />
       </LazyLoadWrapper>
