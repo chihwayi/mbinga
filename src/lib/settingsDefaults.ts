@@ -1,5 +1,5 @@
 export const DEFAULT_SETTINGS = {
-  contact_email: "concierge@mbinga.com",
+  contact_email: "info@mbinga.com",
   contact_whatsapp: "+27 66 457 0911",
 };
 
