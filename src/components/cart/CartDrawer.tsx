@@ -77,7 +77,7 @@ export default function CartDrawer() {
               ) : (
                 cart.map((item) => (
                   <div
-                    key={item.product.id}
+                    key={item.variant.id}
                     className="flex gap-4 p-4 bg-white/5 border border-gold/10 rounded-lg group hover:border-gold/30 transition-all duration-300"
                   >
                     <div className="relative w-20 h-20 bg-white/5 rounded-md overflow-hidden shrink-0">
@@ -95,14 +95,14 @@ export default function CartDrawer() {
                             {item.product.name}
                           </h3>
                           <button
-                            onClick={() => removeFromCart(item.product.id)}
+                            onClick={() => removeFromCart(item.variant.id)}
                             className="text-gray-500 hover:text-red-400 transition-colors"
                           >
                             <Trash2 size={16} />
                           </button>
                         </div>
                         <p className="text-sm text-gray-400 mt-1">
-                          {formatPrice(item.product.price)}
+                          {item.variant.sizeMl}ml · {formatPrice(item.variant.price)}
                         </p>
                       </div>
 
@@ -110,7 +110,7 @@ export default function CartDrawer() {
                         <div className="flex items-center gap-3 bg-black/40 rounded-full px-3 py-1 border border-gold/10">
                           <button
                             onClick={() =>
-                              updateQuantity(item.product.id, item.quantity - 1)
+                              updateQuantity(item.variant.id, item.quantity - 1)
                             }
                             className="text-gold/70 hover:text-gold transition-colors"
                           >
@@ -121,7 +121,7 @@ export default function CartDrawer() {
                           </span>
                           <button
                             onClick={() =>
-                              updateQuantity(item.product.id, item.quantity + 1)
+                              updateQuantity(item.variant.id, item.quantity + 1)
                             }
                             className="text-gold/70 hover:text-gold transition-colors"
                           >
@@ -129,7 +129,7 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <div className="font-bold text-gold/90">
-                          {formatPrice(item.product.price * item.quantity)}
+                          {formatPrice(item.variant.price * item.quantity)}
                         </div>
                       </div>
                     </div>

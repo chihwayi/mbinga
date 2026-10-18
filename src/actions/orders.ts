@@ -19,7 +19,6 @@ export async function createOrder(data: {
   address?:   string
   items:      string
   amount:     number
-  cartItems?: { productId: string; quantity: number }[]
 }) {
   try {
     const customPaymentId = `MB-MANUAL-${Date.now()}`
@@ -37,19 +36,6 @@ export async function createOrder(data: {
         status:    "Pending",
       },
     })
-
-    // Reduce stock for each cart item
-    if (data.cartItems && data.cartItems.length > 0) {
-      for (const item of data.cartItems) {
-        const product = await prisma.product.findUnique({ where: { id: item.productId } })
-        if (product) {
-          await prisma.product.update({
-            where: { id: item.productId },
-            data: { stock: Math.max(0, product.stock - item.quantity) },
-          })
-        }
-      }
-    }
 
     revalidatePath("/admin/orders");
     revalidatePath("/admin");

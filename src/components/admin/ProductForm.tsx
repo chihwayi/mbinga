@@ -7,6 +7,13 @@ import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
+interface Variant {
+  id?:     string;
+  sizeMl:  number;
+  price:   number;
+  stock:   number;
+}
+
 interface Product {
   id:          string;
   name:        string;
@@ -15,13 +22,18 @@ interface Product {
   description: string;
   story:       string;
   category:    string;
-  price:       number;
-  stock:       number;
+  variants:    Variant[];
   notes:       string;
   ingredients: string;
   image:       string;
   accentColor: string;
 }
+
+const DEFAULT_VARIANTS: Variant[] = [
+  { sizeMl: 100, price: 0, stock: 0 },
+  { sizeMl: 50,  price: 0, stock: 0 },
+  { sizeMl: 35,  price: 0, stock: 0 },
+];
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -45,6 +57,23 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [pastedUrl, setPastedUrl] = useState("");
   const [isFetchingUrl, setIsFetchingUrl] = useState(false);
   const [accentColor, setAccentColor] = useState(product?.accentColor || "#D4AF37");
+  const [variants, setVariants] = useState<Variant[]>(
+    product?.variants && product.variants.length > 0
+      ? [...product.variants].sort((a, b) => b.sizeMl - a.sizeMl)
+      : DEFAULT_VARIANTS
+  );
+
+  const updateVariant = (index: number, field: keyof Variant, value: number) => {
+    setVariants(prev => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+  };
+
+  const addVariant = () => {
+    setVariants(prev => [...prev, { sizeMl: 0, price: 0, stock: 0 }]);
+  };
+
+  const removeVariant = (index: number) => {
+    setVariants(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,27 +154,61 @@ export default function ProductForm({ product }: { product?: Product }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-                <label className="block text-white/60 text-sm mb-2">Price ($)</label>
-                <input
-                type="number"
-                name="price"
-                step="0.01"
-                defaultValue={product?.price}
-                required
-                className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
-                />
-            </div>
-            <div>
-                <label className="block text-white/60 text-sm mb-2">Stock</label>
-                <input
-                type="number"
-                name="stock"
-                defaultValue={product?.stock}
-                required
-                className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
-                />
+          <div>
+            <input type="hidden" name="variants" value={JSON.stringify(variants)} />
+            <label className="block text-white/60 text-sm mb-2">Sizes, Prices & Stock</label>
+            <div className="space-y-3">
+              {variants.map((v, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      value={v.sizeMl}
+                      onChange={(e) => updateVariant(i, "sizeMl", Number(e.target.value))}
+                      placeholder="ml"
+                      required
+                      className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={v.price}
+                      onChange={(e) => updateVariant(i, "price", Number(e.target.value))}
+                      placeholder="Price ($)"
+                      required
+                      className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      value={v.stock}
+                      onChange={(e) => updateVariant(i, "stock", Number(e.target.value))}
+                      placeholder="Stock"
+                      required
+                      className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeVariant(i)}
+                    disabled={variants.length <= 1}
+                    className="text-white/40 hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed px-2"
+                    aria-label="Remove size"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addVariant}
+                className="text-xs text-gold hover:text-white transition-colors"
+              >
+                + Add another size
+              </button>
             </div>
           </div>
 

@@ -34,14 +34,24 @@ model Product {
   description String
   story       String
   category    String
-  price       Float
-  stock       Int
   notes       String // Stored as JSON string or comma-separated
   ingredients String // Stored as JSON string or comma-separated
   image       String
   accentColor String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  variants ProductVariant[]
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sizeMl    Int
+  price     Float
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
 }
 
 model Order {

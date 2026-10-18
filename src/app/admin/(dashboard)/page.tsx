@@ -2,16 +2,23 @@ import { prisma } from "@/lib/prisma";
 import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 
 export default async function AdminDashboard() {
-  const [productCount, allOrders, lowStock] = await Promise.all([
+  const [productCount, allOrders, lowStockVariants] = await Promise.all([
     prisma.product.count(),
     prisma.order.findMany({ orderBy: { createdAt: "desc" } }),
-    prisma.product.findMany({
+    prisma.productVariant.findMany({
       where:   { stock: { lte: 5 } },
-      select:  { id: true, name: true, category: true, stock: true },
+      include: { product: { select: { name: true, category: true } } },
       orderBy: { stock: "asc" },
       take:    5,
     }),
   ])
+
+  const lowStock = lowStockVariants.map(v => ({
+    id:       v.id,
+    name:     `${v.product.name} (${v.sizeMl}ml)`,
+    category: v.product.category,
+    stock:    v.stock,
+  }))
 
   const totalRevenue     = allOrders.reduce((acc, o) => acc + Number(o.amount ?? 0), 0)
   const activeOrdersCount = allOrders.filter(o => o.status === 'Pending' || o.status === 'pending' || o.status === 'paid').length

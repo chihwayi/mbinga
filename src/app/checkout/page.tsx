@@ -67,9 +67,9 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items:           cart.map(i => ({
-            id:       i.product.id,
-            name:     i.product.name,
-            price:    i.product.price,
+            id:       i.variant.id,
+            name:     `${i.product.name} (${i.variant.sizeMl}ml)`,
+            price:    i.variant.price,
             quantity: i.quantity,
             image:    i.product.image,
             slug:     i.product.slug,
@@ -158,7 +158,7 @@ export default function CheckoutPage() {
                 <h2 className="text-2xl font-serif mb-6">Order Summary</h2>
                 <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto pr-2">
                     {cart.map((item) => (
-                        <div key={item.product.id} className="flex gap-4 items-center">
+                        <div key={item.variant.id} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-white/5">
                                 <Image
                                     src={getCartImage(item.product.image, item.product.slug)}
@@ -169,10 +169,10 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex-grow">
                                 <h3 className="font-medium">{item.product.name}</h3>
-                                <p className="text-white/40 text-sm">Qty: {item.quantity}</p>
+                                <p className="text-white/40 text-sm">{item.variant.sizeMl}ml · Qty: {item.quantity}</p>
                             </div>
                             <div className="text-gold font-medium">
-                                {formatPrice(item.product.price * item.quantity)}
+                                {formatPrice(item.variant.price * item.quantity)}
                             </div>
                         </div>
                     ))}

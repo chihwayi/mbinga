@@ -144,11 +144,11 @@ async function reduceStock(orderId: string) {
     }
 
     for (const item of items) {
-      const product = await prisma.product.findUnique({ where: { id: item.id } })
-      if (product) {
-        await prisma.product.update({
+      const variant = await prisma.productVariant.findUnique({ where: { id: item.id } })
+      if (variant) {
+        await prisma.productVariant.update({
           where: { id: item.id },
-          data: { stock: Math.max(0, product.stock - item.quantity) },
+          data: { stock: Math.max(0, variant.stock - item.quantity) },
         })
       }
     }

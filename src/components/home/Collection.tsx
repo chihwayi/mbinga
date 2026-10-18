@@ -6,6 +6,13 @@ import Image from "next/image";
 import { motion, useScroll, useAnimation, useMotionValue } from "framer-motion";
 import { useCurrency } from "@/context/CurrencyContext";
 
+interface ProductVariant {
+  id: string;
+  sizeMl: number;
+  price: number;
+  stock: number;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -15,7 +22,12 @@ interface Product {
   category: string;
   notes: string[];
   image: string;
-  price: number;
+  variants: ProductVariant[];
+}
+
+function getStartingPrice(product: Product): number | null {
+  if (product.variants.length === 0) return null;
+  return Math.min(...product.variants.map(v => v.price));
 }
 
 function getProductImage(product: Product) {
@@ -170,7 +182,7 @@ export default function Collection({ products }: { products: Product[] }) {
                       {product.notes.slice(0, 3).join(" · ")}
                   </div>
                   <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2">
-                    {formatPrice(product.price)}
+                    {getStartingPrice(product) != null ? `From ${formatPrice(getStartingPrice(product)!)}` : "—"}
                   </span>
                 </div>
               </div>

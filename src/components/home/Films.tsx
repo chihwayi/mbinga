@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import ProductFilm from "./ProductFilm";
 
@@ -11,6 +12,8 @@ const films = [
 ];
 
 export default function Films() {
+  const [openFilm, setOpenFilm] = useState<string | null>(null);
+
   return (
     <section className="py-32 px-6 bg-obsidian">
       <div className="max-w-7xl mx-auto">
@@ -37,7 +40,14 @@ export default function Films() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
             >
-              <ProductFilm name={film.name} poster={film.poster} video={film.video} />
+              <ProductFilm
+                name={film.name}
+                poster={film.poster}
+                video={film.video}
+                isOpen={openFilm === film.name}
+                onOpen={() => setOpenFilm(film.name)}
+                onClose={() => setOpenFilm(null)}
+              />
             </motion.div>
           ))}
         </div>

@@ -2,19 +2,31 @@
 
 import { useState } from "react";
 import { Product } from "@/types";
+import { sortVariantsBySize } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import clsx from "clsx";
 
 export default function AddToCartSection({ product }: { product: Product }) {
+  const sortedVariants = sortVariantsBySize(product.variants);
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    sortedVariants.find(v => v.stock > 0)?.id ?? sortedVariants[0]?.id
+  );
+  const selectedVariant = sortedVariants.find(v => v.id === selectedVariantId) ?? sortedVariants[0];
+
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
-  const isOutOfStock = product.stock === 0;
+  const isOutOfStock = !selectedVariant || selectedVariant.stock === 0;
+
+  const handleSelectVariant = (variantId: string) => {
+    setSelectedVariantId(variantId);
+    setQuantity(1);
+  };
 
   const handleIncrement = () => {
-    if (quantity < product.stock) {
+    if (selectedVariant && quantity < selectedVariant.stock) {
       setQuantity((prev) => prev + 1);
     }
   };
@@ -26,33 +38,67 @@ export default function AddToCartSection({ product }: { product: Product }) {
   };
 
   const handleAddToCart = () => {
-    if (!isOutOfStock) {
-      addToCart(product, quantity);
+    if (!isOutOfStock && selectedVariant) {
+      addToCart(product, selectedVariant, quantity);
       setQuantity(1); // Reset to 1 after adding
     }
   };
 
+  if (!selectedVariant) {
+    return (
+      <div className="mt-auto pt-8 border-t border-obsidian/10 text-obsidian/50 text-sm">
+        This fragrance is currently unavailable.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 mt-auto pt-8 border-t border-obsidian/10">
+      {/* Size Selector */}
+      {sortedVariants.length > 1 && (
+        <div>
+          <p className="text-xs uppercase tracking-widest text-obsidian/40 mb-2">Size</p>
+          <div className="flex gap-2">
+            {sortedVariants.map((variant) => (
+              <button
+                key={variant.id}
+                type="button"
+                onClick={() => handleSelectVariant(variant.id)}
+                disabled={variant.stock === 0}
+                className={clsx(
+                  "px-4 py-2 border text-sm transition-colors",
+                  variant.id === selectedVariant.id
+                    ? "border-gold bg-gold text-obsidian font-medium"
+                    : "border-obsidian/20 text-obsidian/70 hover:border-gold",
+                  variant.stock === 0 && "opacity-30 cursor-not-allowed hover:border-obsidian/20"
+                )}
+              >
+                {variant.sizeMl}ml
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Stock Status */}
       <div className="flex items-center gap-2">
         <div
           className={clsx(
             "w-2 h-2 rounded-full",
-            isOutOfStock ? "bg-red-500" : product.stock < 5 ? "bg-orange-500" : "bg-green-500"
+            isOutOfStock ? "bg-red-500" : selectedVariant.stock < 5 ? "bg-orange-500" : "bg-green-500"
           )}
         />
         <span className={clsx("text-sm tracking-wide", isOutOfStock ? "text-red-400" : "text-gray-500")}>
           {isOutOfStock
             ? "Out of Stock"
-            : product.stock < 5
-            ? `Only ${product.stock} left`
+            : selectedVariant.stock < 5
+            ? `Only ${selectedVariant.stock} left`
             : "In Stock"}
         </span>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-        <div className="text-3xl font-serif text-obsidian">{formatPrice(product.price)}</div>
+        <div className="text-3xl font-serif text-obsidian">{formatPrice(selectedVariant.price)}</div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {/* Quantity Selector */}
@@ -69,7 +115,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
               <button
                 onClick={handleIncrement}
                 className="w-10 h-full flex items-center justify-center text-obsidian/50 hover:text-gold hover:bg-obsidian/5 transition-colors"
-                disabled={quantity >= product.stock}
+                disabled={quantity >= selectedVariant.stock}
               >
                 <Plus size={16} />
               </button>

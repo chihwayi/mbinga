@@ -88,11 +88,21 @@ export default async function AdminProducts() {
                         {product.category}
                     </span>
                   </td>
-                  <td className="p-6 text-gold font-serif text-lg">${product.price}</td>
+                  <td className="p-6 text-gold font-serif text-lg">
+                    {product.variants.length > 0
+                      ? `From $${Math.min(...product.variants.map(v => v.price))}`
+                      : '—'}
+                  </td>
                   <td className="p-6">
-                    <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-400' : 'bg-red-500'}`} />
-                        <span className="text-white/60">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
+                    <div className="space-y-1">
+                      {product.variants.map(v => (
+                        <div key={v.id} className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${v.stock > 0 ? 'bg-emerald-400' : 'bg-red-500'}`} />
+                          <span className="text-white/60 text-xs">
+                            {v.sizeMl}ml — {v.stock > 0 ? `${v.stock} in stock` : 'Out of stock'}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </td>
                   <td className="p-6 text-right">
