@@ -5,7 +5,6 @@ import { toSlideDTO } from "@/lib/heroSlide";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
-import BrandEssence from "@/components/home/BrandEssence";
 import Collection from "@/components/home/Collection";
 import Films from "@/components/home/Films";
 import Story from "@/components/home/Story";
@@ -34,7 +33,6 @@ export default async function Home() {
     <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-black">
       <Navbar />
       <Hero slides={slides} />
-      <BrandEssence />
       <Collection products={products} />
       <LazyLoadWrapper>
         <Films />
