@@ -8,10 +8,11 @@ import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
 interface Variant {
-  id?:     string;
-  sizeMl:  number;
-  price:   number;
-  stock:   number;
+  id?:       string;
+  sizeMl:    number;
+  priceUsd:  number;
+  priceZar:  number;
+  stock:     number;
 }
 
 interface Product {
@@ -30,9 +31,9 @@ interface Product {
 }
 
 const DEFAULT_VARIANTS: Variant[] = [
-  { sizeMl: 100, price: 0, stock: 0 },
-  { sizeMl: 50,  price: 0, stock: 0 },
-  { sizeMl: 35,  price: 0, stock: 0 },
+  { sizeMl: 100, priceUsd: 0, priceZar: 0, stock: 0 },
+  { sizeMl: 50,  priceUsd: 0, priceZar: 0, stock: 0 },
+  { sizeMl: 35,  priceUsd: 0, priceZar: 0, stock: 0 },
 ];
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -68,7 +69,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   };
 
   const addVariant = () => {
-    setVariants(prev => [...prev, { sizeMl: 0, price: 0, stock: 0 }]);
+    setVariants(prev => [...prev, { sizeMl: 0, priceUsd: 0, priceZar: 0, stock: 0 }]);
   };
 
   const removeVariant = (index: number) => {
@@ -157,10 +158,13 @@ export default function ProductForm({ product }: { product?: Product }) {
           <div>
             <input type="hidden" name="variants" value={JSON.stringify(variants)} />
             <label className="block text-white/60 text-sm mb-2">Sizes, Prices & Stock</label>
+            <p className="text-white/30 text-xs mb-3">
+              Set the Rand (SA) and USD (Zimbabwe) price independently for each size — they are not auto-converted.
+            </p>
             <div className="space-y-3">
               {variants.map((v, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div className="flex-1">
+                  <div className="w-16">
                     <input
                       type="number"
                       value={v.sizeMl}
@@ -174,14 +178,25 @@ export default function ProductForm({ product }: { product?: Product }) {
                     <input
                       type="number"
                       step="0.01"
-                      value={v.price}
-                      onChange={(e) => updateVariant(i, "price", Number(e.target.value))}
-                      placeholder="Price ($)"
+                      value={v.priceZar}
+                      onChange={(e) => updateVariant(i, "priceZar", Number(e.target.value))}
+                      placeholder="Price (R)"
                       required
                       className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
                     />
                   </div>
                   <div className="flex-1">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={v.priceUsd}
+                      onChange={(e) => updateVariant(i, "priceUsd", Number(e.target.value))}
+                      placeholder="Price ($)"
+                      required
+                      className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+                    />
+                  </div>
+                  <div className="w-20">
                     <input
                       type="number"
                       value={v.stock}

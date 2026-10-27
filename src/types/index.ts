@@ -1,7 +1,8 @@
 export interface ProductVariant {
   id: string;
   sizeMl: number;
-  price: number;
+  priceUsd: number;
+  priceZar: number;
   stock: number;
 }
 
@@ -26,4 +27,11 @@ export interface Product {
 // reverse of aromatic-scents' ascending order.
 export function sortVariantsBySize(variants: ProductVariant[]): ProductVariant[] {
   return [...variants].sort((a, b) => b.sizeMl - a.sizeMl);
+}
+
+// SA (Rand) and Zimbabwe (USD) are priced independently by the admin, not
+// derived from each other via an exchange rate — pick the stored amount
+// that matches the active currency.
+export function getVariantPrice(variant: ProductVariant, currency: "USD" | "ZAR"): number {
+  return currency === "ZAR" ? variant.priceZar : variant.priceUsd;
 }

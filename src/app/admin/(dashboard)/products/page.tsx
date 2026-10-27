@@ -3,10 +3,9 @@ import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-function getProductImage(image: string, slug: string) {
+function getProductImage(image: string) {
   let src = image || "";
   if (src.endsWith(".jpg")) src = src.replace(".jpg", ".png");
-  if (slug === "uzoba-lit") src = "/images/unoziba-lit.png";
   return src;
 }
 
@@ -67,7 +66,7 @@ export default async function AdminProducts() {
                         <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden bg-white">
                             {product.image ? (
                                 <Image
-                                  src={getProductImage(product.image, product.slug)}
+                                  src={getProductImage(product.image)}
                                   alt={product.name}
                                   width={48}
                                   height={48}
@@ -90,7 +89,7 @@ export default async function AdminProducts() {
                   </td>
                   <td className="p-6 text-gold font-serif text-lg">
                     {product.variants.length > 0
-                      ? `From $${Math.min(...product.variants.map(v => v.price))}`
+                      ? `From R${Math.min(...product.variants.map(v => v.priceZar))} / $${Math.min(...product.variants.map(v => v.priceUsd))}`
                       : '—'}
                   </td>
                   <td className="p-6">

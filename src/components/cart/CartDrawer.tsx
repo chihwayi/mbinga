@@ -2,20 +2,17 @@
 
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getVariantPrice } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-function getCartImage(image: string, slug?: string) {
+function getCartImage(image: string) {
   let src = image || "";
 
   if (src.endsWith(".jpg")) {
     src = src.replace(".jpg", ".png");
-  }
-
-  if (slug === "uzoba-lit") {
-    src = "/images/unoziba-lit.png";
   }
 
   return src;
@@ -23,7 +20,7 @@ function getCartImage(image: string, slug?: string) {
 
 export default function CartDrawer() {
   const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
-  const { formatPrice } = useCurrency();
+  const { currency, formatPrice } = useCurrency();
   const isClient = typeof window !== "undefined";
 
   return (
@@ -82,7 +79,7 @@ export default function CartDrawer() {
                   >
                     <div className="relative w-20 h-20 bg-white/5 rounded-md overflow-hidden shrink-0">
                       <Image
-                        src={getCartImage(item.product.image, item.product.slug)}
+                        src={getCartImage(item.product.image)}
                         alt={item.product.name}
                         fill
                         className="object-cover"
@@ -102,7 +99,7 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <p className="text-sm text-gray-400 mt-1">
-                          {item.variant.sizeMl}ml · {formatPrice(item.variant.price)}
+                          {item.variant.sizeMl}ml · {formatPrice(getVariantPrice(item.variant, currency))}
                         </p>
                       </div>
 
@@ -129,7 +126,7 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <div className="font-bold text-gold/90">
-                          {formatPrice(item.variant.price * item.quantity)}
+                          {formatPrice(getVariantPrice(item.variant, currency) * item.quantity)}
                         </div>
                       </div>
                     </div>
@@ -144,11 +141,11 @@ export default function CartDrawer() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span>{formatPrice(getCartTotal())}</span>
+                    <span>{formatPrice(getCartTotal(currency))}</span>
                   </div>
                   <div className="flex justify-between text-xl font-serif text-gold">
                     <span>Total</span>
-                    <span>{formatPrice(getCartTotal())}</span>
+                    <span>{formatPrice(getCartTotal(currency))}</span>
                   </div>
                 </div>
                 <Link 

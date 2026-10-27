@@ -3,20 +3,20 @@
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getVariantPrice } from "@/types";
 import Link from "next/link";
 import { ArrowLeft, CreditCard } from "lucide-react";
 import Image from "next/image";
 
-function getCartImage(image: string, slug?: string) {
+function getCartImage(image: string) {
   let src = image || "";
   if (src.endsWith(".jpg")) src = src.replace(".jpg", ".png");
-  if (slug === "uzoba-lit") src = "/images/unoziba-lit.png";
   return src;
 }
 
 export default function CheckoutPage() {
   const { cart, isCartLoaded, getCartTotal, clearCart } = useCart();
-  const { currency, formatPrice, rate } = useCurrency();
+  const { currency, formatPrice } = useCurrency();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +69,7 @@ export default function CheckoutPage() {
           items:           cart.map(i => ({
             id:       i.variant.id,
             name:     `${i.product.name} (${i.variant.sizeMl}ml)`,
-            price:    i.variant.price,
+            price:    i.variant.priceZar,
             quantity: i.quantity,
             image:    i.product.image,
             slug:     i.product.slug,
@@ -161,7 +161,7 @@ export default function CheckoutPage() {
                         <div key={item.variant.id} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-white/5">
                                 <Image
-                                    src={getCartImage(item.product.image, item.product.slug)}
+                                    src={getCartImage(item.product.image)}
                                     alt={item.product.name}
                                     fill
                                     className="object-cover"
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
                                 <p className="text-white/40 text-sm">{item.variant.sizeMl}ml · Qty: {item.quantity}</p>
                             </div>
                             <div className="text-gold font-medium">
-                                {formatPrice(item.variant.price * item.quantity)}
+                                {formatPrice(getVariantPrice(item.variant, currency) * item.quantity)}
                             </div>
                         </div>
                     ))}
@@ -181,7 +181,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-white/10 pt-6 space-y-2">
                     <div className="flex justify-between text-white/60">
                         <span>Subtotal</span>
-                        <span>{formatPrice(getCartTotal())}</span>
+                        <span>{formatPrice(getCartTotal(currency))}</span>
                     </div>
                     <div className="flex justify-between text-white/60">
                         <span>Delivery</span>
@@ -189,11 +189,11 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between text-xl font-serif text-gold pt-4 border-t border-white/10 mt-4">
                         <span>Total</span>
-                        <span>{formatPrice(getCartTotal())}</span>
+                        <span>{formatPrice(getCartTotal(currency))}</span>
                     </div>
                     {currency === "USD" && (
                         <p className="text-xs text-white/40 pt-2">
-                            BobPay charges in ZAR — you&apos;ll be billed R{(getCartTotal() * rate).toFixed(2)}.
+                            BobPay charges in Rand — you&apos;ll be billed R{getCartTotal("ZAR").toFixed(2)}.
                         </p>
                     )}
                 </div>

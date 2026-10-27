@@ -20,15 +20,15 @@ interface OrderEmailData {
 
 function formatItemsList(items: OrderItem[]): string {
   return items
-    .map((i) => `<li>${i.name} × ${i.quantity} — $${(i.price * i.quantity).toFixed(2)}</li>`)
+    .map((i) => `<li>${i.name} × ${i.quantity} — R${(i.price * i.quantity).toFixed(2)}</li>`)
     .join("");
 }
 
 function buildOrderSummaryHtml(order: OrderEmailData): string {
   return `
     <ul>${formatItemsList(order.items)}</ul>
-    <p><strong>Subtotal:</strong> $${(order.subtotal ?? 0).toFixed(2)}<br/>
-    <strong>Delivery:</strong> $${(order.deliveryCost ?? 0).toFixed(2)}<br/>
+    <p><strong>Subtotal:</strong> R${(order.subtotal ?? 0).toFixed(2)}<br/>
+    <strong>Delivery:</strong> R${(order.deliveryCost ?? 0).toFixed(2)}<br/>
     <strong>Total Paid:</strong> R${order.totalAmount.toFixed(2)}</p>
     <p><strong>Delivery Address:</strong><br/>${(order.address || "—").replace(/\n/g, "<br/>")}</p>
     <p><strong>Customer Phone:</strong> ${order.customerPhone || "—"}</p>

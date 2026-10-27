@@ -159,8 +159,9 @@ export default function Hero({ slides = [] }: Props) {
             className="object-cover"
             priority
           />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-obsidian/60" />
+          {/* A light bottom-only fade keeps the image clear and visible while
+              still giving the title/subtitle text enough contrast. */}
+          <div className="absolute inset-0 bg-gradient-to-t from-obsidian/50 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
 
@@ -186,12 +187,12 @@ export default function Hero({ slides = [] }: Props) {
             className="flex flex-col items-center gap-4"
           >
             {slide.title && (
-              <h1 className="font-cinzel font-bold text-4xl md:text-6xl text-white leading-tight">
+              <h1 className="font-cinzel font-bold text-4xl md:text-6xl text-white leading-tight drop-shadow-lg">
                 {slide.title}
               </h1>
             )}
             {slide.subtitle && (
-              <p className="text-white/60 text-base md:text-lg font-light tracking-wide max-w-xl">
+              <p className="text-white/80 text-base md:text-lg font-light tracking-wide max-w-xl drop-shadow">
                 {slide.subtitle}
               </p>
             )}

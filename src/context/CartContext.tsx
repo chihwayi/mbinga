@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, ProductVariant } from "@/types";
+import { Product, ProductVariant, getVariantPrice } from "@/types";
+import type { Currency } from "@/context/CurrencyContext";
 
 export interface CartItem {
   product: Product;
@@ -18,7 +19,7 @@ interface CartContextType {
   updateQuantity: (variantId: string, quantity: number) => void;
   toggleCart: () => void;
   clearCart: () => void;
-  getCartTotal: () => number;
+  getCartTotal: (currency: Currency) => number;
   getItemCount: () => number;
 }
 
@@ -111,8 +112,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart([]);
   };
 
-  const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.variant.price * item.quantity, 0);
+  const getCartTotal = (currency: Currency) => {
+    return cart.reduce((total, item) => total + getVariantPrice(item.variant, currency) * item.quantity, 0);
   };
 
   const getItemCount = () => {

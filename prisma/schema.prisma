@@ -49,7 +49,8 @@ model ProductVariant {
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   sizeMl    Int
-  price     Float
+  priceUsd  Float
+  priceZar  Float
   stock     Int      @default(0)
   createdAt DateTime @default(now())
 }

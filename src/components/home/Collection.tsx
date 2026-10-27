@@ -9,7 +9,8 @@ import { useCurrency } from "@/context/CurrencyContext";
 interface ProductVariant {
   id: string;
   sizeMl: number;
-  price: number;
+  priceUsd: number;
+  priceZar: number;
   stock: number;
 }
 
@@ -25,9 +26,9 @@ interface Product {
   variants: ProductVariant[];
 }
 
-function getStartingPrice(product: Product): number | null {
+function getStartingPrice(product: Product, currency: "USD" | "ZAR"): number | null {
   if (product.variants.length === 0) return null;
-  return Math.min(...product.variants.map(v => v.price));
+  return Math.min(...product.variants.map(v => currency === "ZAR" ? v.priceZar : v.priceUsd));
 }
 
 function getProductImage(product: Product) {
@@ -37,15 +38,11 @@ function getProductImage(product: Product) {
     src = src.replace(".jpg", ".png");
   }
 
-  if (product.slug === "uzoba-lit") {
-    src = "/images/unoziba-lit.png";
-  }
-
   return src;
 }
 
 export default function Collection({ products }: { products: Product[] }) {
-  const { formatPrice } = useCurrency();
+  const { currency, formatPrice } = useCurrency();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
   const controls = useAnimation();
@@ -168,11 +165,11 @@ export default function Collection({ products }: { products: Product[] }) {
               <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-transparent opacity-90" />
 
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 z-10 transform transition-transform duration-500 group-hover:-translate-y-2">
-                <span className="inline-block px-2.5 py-1 mb-3 sm:mb-4 border border-gold text-gold text-[9px] sm:text-[10px] uppercase tracking-widest">
-                  {product.category}
-                </span>
-                <h3 className="font-serif text-xl sm:text-3xl md:text-4xl text-cream mb-2 group-hover:text-gold transition-colors">
+                <h3 className="font-serif text-xl sm:text-3xl md:text-4xl text-cream mb-2 group-hover:text-gold transition-colors flex items-center gap-3">
                   {product.name}
+                  <span className="text-white/70 text-[9px] sm:text-[10px] uppercase tracking-widest font-sans font-normal">
+                    {product.category}
+                  </span>
                 </h3>
                 <p className="text-cream/70 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 font-light">
                   {product.tagline}
@@ -182,7 +179,7 @@ export default function Collection({ products }: { products: Product[] }) {
                       {product.notes.slice(0, 3).join(" · ")}
                   </div>
                   <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2">
-                    {getStartingPrice(product) != null ? `From ${formatPrice(getStartingPrice(product)!)}` : "—"}
+                    {getStartingPrice(product, currency) != null ? `From ${formatPrice(getStartingPrice(product, currency)!)}` : "—"}
                   </span>
                 </div>
               </div>

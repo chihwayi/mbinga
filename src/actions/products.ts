@@ -24,17 +24,18 @@ function mapRow(row: Product & { variants: ProductVariant[] }) {
     ...row,
     notes: parseList(row.notes),
     ingredients: parseList(row.ingredients),
-    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, price: v.price, stock: v.stock })),
+    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock })),
   }
 }
 
 interface VariantInput {
-  sizeMl: number;
-  price: number;
-  stock: number;
+  sizeMl:   number;
+  priceUsd: number;
+  priceZar: number;
+  stock:    number;
 }
 
-// The admin form serializes its variant rows (size/price/stock) as JSON into
+// The admin form serializes its variant rows (size/prices/stock) as JSON into
 // a single hidden field, since a plain FormData can't carry a nested array.
 function parseVariants(formData: FormData): VariantInput[] {
   const raw = formData.get("variants") as string | null
@@ -44,11 +45,12 @@ function parseVariants(formData: FormData): VariantInput[] {
     if (!Array.isArray(parsed)) return []
     return parsed
       .map(v => ({
-        sizeMl: Number(v.sizeMl),
-        price: Number(v.price),
-        stock: Number(v.stock),
+        sizeMl:   Number(v.sizeMl),
+        priceUsd: Number(v.priceUsd),
+        priceZar: Number(v.priceZar),
+        stock:    Number(v.stock),
       }))
-      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.price))
+      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.priceUsd) && Number.isFinite(v.priceZar))
   } catch {
     return []
   }
@@ -75,7 +77,7 @@ export async function createProduct(formData: FormData) {
       image:       formData.get("image") as string,
       accentColor: formData.get("accentColor") as string,
       variants: {
-        create: variants.map(v => ({ sizeMl: v.sizeMl, price: v.price, stock: v.stock })),
+        create: variants.map(v => ({ sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock })),
       },
     },
   })
@@ -115,7 +117,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
     for (const v of variants) {
       await tx.productVariant.create({
-        data: { productId: id, sizeMl: v.sizeMl, price: v.price, stock: v.stock },
+        data: { productId: id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock },
       })
     }
   })
