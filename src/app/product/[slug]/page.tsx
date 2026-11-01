@@ -67,8 +67,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 background: `radial-gradient(circle at center, ${product.accentColor}40 0%, #0E0E0E 70%)`
             }}
         >
-            <div className="relative z-10 p-12 text-center">
-                 <div className="relative w-80 h-[500px] mx-auto drop-shadow-2xl">
+            <div className="relative z-10 p-6 md:p-12 text-center w-full">
+                 <div className="relative w-full max-w-[420px] md:max-w-[640px] h-[55vh] md:h-[80vh] mx-auto drop-shadow-2xl">
                     <Image
                         src={product.image}
                         alt={product.name}
@@ -98,6 +98,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </p>
 
             <div className="h-[1px] w-24 bg-gold mb-12" />
+
+            {product.variants.some(v => v.sizeMl === 100) && (
+                <div className="mb-10 pb-8 border-b border-white/10">
+                    <p className="text-gold text-xs uppercase tracking-[0.25em] mb-2">
+                        35% Fragrance Concentration | Extrait de Parfum
+                    </p>
+                    <p className="text-white/60 font-light leading-relaxed">
+                        Crafted with a 35% fragrance oil concentration, MBINGA brings together the richness of fine perfumery and an expression of African-inspired luxury.
+                    </p>
+                </div>
+            )}
 
             <div className="mb-12 space-y-6">
                 <h3 className="font-serif text-2xl text-gold">The Story</h3>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, ProductVariant, getVariantPrice } from "@/types";
+import { Product, ProductVariant } from "@/types";
+import { getVariantPricing } from "@/lib/discount";
 import type { Currency } from "@/context/CurrencyContext";
 
 export interface CartItem {
@@ -113,7 +114,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getCartTotal = (currency: Currency) => {
-    return cart.reduce((total, item) => total + getVariantPrice(item.variant, currency) * item.quantity, 0);
+    return cart.reduce((total, item) => total + getVariantPricing(item.product, item.variant, currency).discounted * item.quantity, 0);
   };
 
   const getItemCount = () => {

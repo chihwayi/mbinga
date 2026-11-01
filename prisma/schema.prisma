@@ -41,6 +41,10 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  discountPercent  Float?
+  discountStartsAt DateTime?
+  discountEndsAt   DateTime?
+
   variants ProductVariant[]
 }
 

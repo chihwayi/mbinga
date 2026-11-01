@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { usdToZar } from "@/lib/currency";
 import type { Product, ProductVariant } from "@prisma/client";
 
 // ─── Row → TypeScript shape ───────────────────────────────────────────────────
@@ -35,8 +36,10 @@ interface VariantInput {
   stock:    number;
 }
 
-// The admin form serializes its variant rows (size/prices/stock) as JSON into
+// The admin form serializes its variant rows (size/price/stock) as JSON into
 // a single hidden field, since a plain FormData can't carry a nested array.
+// Only USD is entered by the admin — ZAR is always derived from it using the
+// fixed rate, so the two currencies can never drift out of sync.
 function parseVariants(formData: FormData): VariantInput[] {
   const raw = formData.get("variants") as string | null
   if (!raw) return []
@@ -47,12 +50,29 @@ function parseVariants(formData: FormData): VariantInput[] {
       .map(v => ({
         sizeMl:   Number(v.sizeMl),
         priceUsd: Number(v.priceUsd),
-        priceZar: Number(v.priceZar),
+        priceZar: usdToZar(Number(v.priceUsd)),
         stock:    Number(v.stock),
       }))
-      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.priceUsd) && Number.isFinite(v.priceZar))
+      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.priceUsd))
   } catch {
     return []
+  }
+}
+
+// Discount inputs come from three separate form fields (percent, starts,
+// ends) rather than the single JSON blob used for variants, since they're
+// plain scalar inputs in the form.
+function parseDiscount(formData: FormData) {
+  const percentRaw = formData.get("discountPercent") as string | null
+  const startsRaw  = formData.get("discountStartsAt") as string | null
+  const endsRaw    = formData.get("discountEndsAt") as string | null
+
+  const percent = percentRaw && percentRaw.trim() !== "" ? Number(percentRaw) : null
+
+  return {
+    discountPercent:  percent && Number.isFinite(percent) && percent > 0 ? percent : null,
+    discountStartsAt: startsRaw ? new Date(startsRaw) : null,
+    discountEndsAt:   endsRaw ? new Date(endsRaw) : null,
   }
 }
 
@@ -63,6 +83,7 @@ export async function createProduct(formData: FormData) {
   const notes       = (formData.get("notes") as string).split(",").map(s => s.trim()).filter(Boolean)
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
   const variants     = parseVariants(formData)
+  const discount     = parseDiscount(formData)
 
   await prisma.product.create({
     data: {
@@ -76,6 +97,7 @@ export async function createProduct(formData: FormData) {
       ingredients: JSON.stringify(ingredients),
       image:       formData.get("image") as string,
       accentColor: formData.get("accentColor") as string,
+      ...discount,
       variants: {
         create: variants.map(v => ({ sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock })),
       },
@@ -95,6 +117,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const notes       = (formData.get("notes") as string).split(",").map(s => s.trim()).filter(Boolean)
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
   const variants     = parseVariants(formData)
+  const discount     = parseDiscount(formData)
 
   await prisma.$transaction(async (tx) => {
     await tx.product.update({
@@ -110,6 +133,7 @@ export async function updateProduct(id: string, formData: FormData) {
         ingredients: JSON.stringify(ingredients),
         image:       formData.get("image") as string,
         accentColor: formData.get("accentColor") as string,
+        ...discount,
       },
     })
 
@@ -126,6 +150,26 @@ export async function updateProduct(id: string, formData: FormData) {
   revalidatePath(`/product/${slug}`);
   revalidatePath("/");
   redirect("/admin/products");
+}
+
+// Applies (or clears, when percent is null) the same discount to every
+// product at once — used for storewide sales like the November launch
+// promotion, so the admin doesn't have to edit each product individually.
+export async function applyBulkDiscount(percent: number | null, startsAt: string | null, endsAt: string | null) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
+  const result = await prisma.product.updateMany({
+    data: {
+      discountPercent:  percent && percent > 0 ? percent : null,
+      discountStartsAt: startsAt ? new Date(startsAt) : null,
+      discountEndsAt:   endsAt ? new Date(endsAt) : null,
+    },
+  })
+
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+  return { success: true, updated: result.count };
 }
 
 export async function deleteProduct(id: string) {

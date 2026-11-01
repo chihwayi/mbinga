@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useAnimation, useMotionValue } from "framer-motion";
 import { useCurrency } from "@/context/CurrencyContext";
+import { isDiscountActive, applyDiscount } from "@/lib/discount";
 
 interface ProductVariant {
   id: string;
@@ -24,11 +25,17 @@ interface Product {
   notes: string[];
   image: string;
   variants: ProductVariant[];
+  discountPercent?: number | null;
+  discountStartsAt?: Date | string | null;
+  discountEndsAt?: Date | string | null;
 }
 
-function getStartingPrice(product: Product, currency: "USD" | "ZAR"): number | null {
+function getStartingPrice(product: Product, currency: "USD" | "ZAR"): { original: number; discounted: number; active: boolean } | null {
   if (product.variants.length === 0) return null;
-  return Math.min(...product.variants.map(v => currency === "ZAR" ? v.priceZar : v.priceUsd));
+  const original = Math.min(...product.variants.map(v => currency === "ZAR" ? v.priceZar : v.priceUsd));
+  const active = isDiscountActive(product);
+  const discounted = active ? applyDiscount(original, product.discountPercent!) : original;
+  return { original, discounted, active };
 }
 
 function getProductImage(product: Product) {
@@ -149,7 +156,7 @@ export default function Collection({ products }: { products: Product[] }) {
                     src={getProductImage(product)}
                     alt={product.name}
                     fill
-                    className="object-cover opacity-60 grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
+                    className="object-cover transition-all duration-500"
                   />
                 </div>
               )}
@@ -178,11 +185,27 @@ export default function Collection({ products }: { products: Product[] }) {
                   <div className="flex gap-2 text-[9px] sm:text-[10px] text-gold/90 tracking-widest uppercase truncate">
                       {product.notes.slice(0, 3).join(" · ")}
                   </div>
-                  <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2">
-                    {getStartingPrice(product, currency) != null ? `From ${formatPrice(getStartingPrice(product, currency)!)}` : "—"}
+                  <span className="font-serif text-base sm:text-xl text-gold flex-shrink-0 ml-2 flex items-center gap-2">
+                    {(() => {
+                      const price = getStartingPrice(product, currency);
+                      if (!price) return "—";
+                      if (!price.active) return `From ${formatPrice(price.discounted)}`;
+                      return (
+                        <>
+                          <span className="text-white/30 line-through text-xs sm:text-sm">{formatPrice(price.original)}</span>
+                          <span>From {formatPrice(price.discounted)}</span>
+                        </>
+                      );
+                    })()}
                   </span>
                 </div>
               </div>
+
+              {product.discountPercent != null && isDiscountActive(product) && (
+                <div className="absolute top-4 right-4 z-10 bg-gold text-obsidian text-[10px] sm:text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full animate-pulse">
+                  -{product.discountPercent}%
+                </div>
+              )}
             </motion.div>
           </Link>
         </motion.div>

@@ -19,6 +19,9 @@ export interface Product {
   image: string;
   accentColor: string;
   variants: ProductVariant[];
+  discountPercent?: number | null;
+  discountStartsAt?: Date | string | null;
+  discountEndsAt?: Date | string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,9 +32,9 @@ export function sortVariantsBySize(variants: ProductVariant[]): ProductVariant[]
   return [...variants].sort((a, b) => b.sizeMl - a.sizeMl);
 }
 
-// SA (Rand) and Zimbabwe (USD) are priced independently by the admin, not
-// derived from each other via an exchange rate — pick the stored amount
-// that matches the active currency.
+// The admin only enters a USD price — the Rand amount is derived from it at
+// a fixed rate (see src/lib/currency.ts) — pick the stored amount that
+// matches the active currency.
 export function getVariantPrice(variant: ProductVariant, currency: "USD" | "ZAR"): number {
   return currency === "ZAR" ? variant.priceZar : variant.priceUsd;
 }

@@ -2,6 +2,8 @@ import { getProducts, deleteProduct } from "@/actions/products";
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import BulkDiscountButton from "@/components/admin/BulkDiscountButton";
+import { isDiscountActive } from "@/lib/discount";
 
 function getProductImage(image: string) {
   let src = image || "";
@@ -19,13 +21,16 @@ export default async function AdminProducts() {
           <h2 className="text-3xl font-serif text-white mb-2">Products</h2>
           <p className="text-white/40 font-light">Manage your perfume collection.</p>
         </div>
-        <Link
-            href="/admin/products/new"
-            className="bg-obsidian border border-gold text-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gold hover:text-obsidian transition-colors"
-        >
-          <Plus size={18} />
-          Add Product
-        </Link>
+        <div className="flex items-center gap-3">
+          <BulkDiscountButton />
+          <Link
+              href="/admin/products/new"
+              className="bg-obsidian border border-gold text-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gold hover:text-obsidian transition-colors"
+          >
+            <Plus size={18} />
+            Add Product
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
@@ -91,6 +96,17 @@ export default async function AdminProducts() {
                     {product.variants.length > 0
                       ? `From R${Math.min(...product.variants.map(v => v.priceZar))} / $${Math.min(...product.variants.map(v => v.priceUsd))}`
                       : '—'}
+                    {product.discountPercent != null && (
+                      <div className="mt-1">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                          isDiscountActive(product)
+                            ? 'border-emerald-400/40 text-emerald-400'
+                            : 'border-white/20 text-white/40'
+                        }`}>
+                          {isDiscountActive(product) ? `-${product.discountPercent}% SALE` : `${product.discountPercent}% scheduled`}
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="p-6">
                     <div className="space-y-1">

@@ -46,7 +46,10 @@ export default function ProductFilm({ name, poster, video, isOpen, onOpen, onClo
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300" />
+        {/* Keep the poster clearly visible at rest — only darken slightly on
+            hover, just enough to lift the play button and caption. */}
+        <div className="absolute inset-0 bg-black/5 group-hover:bg-black/25 transition-colors duration-300" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
 
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-gold flex items-center justify-center bg-black/40 backdrop-blur-sm group-hover:bg-gold group-hover:scale-110 transition-all duration-300">

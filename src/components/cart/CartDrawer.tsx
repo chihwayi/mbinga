@@ -2,7 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
-import { getVariantPrice } from "@/types";
+import { getVariantPricing } from "@/lib/discount";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -72,7 +72,9 @@ export default function CartDrawer() {
                   </button>
                 </div>
               ) : (
-                cart.map((item) => (
+                cart.map((item) => {
+                  const pricing = getVariantPricing(item.product, item.variant, currency);
+                  return (
                   <div
                     key={item.variant.id}
                     className="flex gap-4 p-4 bg-white/5 border border-gold/10 rounded-lg group hover:border-gold/30 transition-all duration-300"
@@ -98,8 +100,12 @@ export default function CartDrawer() {
                             <Trash2 size={16} />
                           </button>
                         </div>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {item.variant.sizeMl}ml · {formatPrice(getVariantPrice(item.variant, currency))}
+                        <p className="text-sm text-gray-400 mt-1 flex items-center gap-2">
+                          <span>{item.variant.sizeMl}ml ·</span>
+                          {pricing.active && (
+                            <span className="line-through text-gray-500">{formatPrice(pricing.original)}</span>
+                          )}
+                          <span>{formatPrice(pricing.discounted)}</span>
                         </p>
                       </div>
 
@@ -126,12 +132,13 @@ export default function CartDrawer() {
                           </button>
                         </div>
                         <div className="font-bold text-gold/90">
-                          {formatPrice(getVariantPrice(item.variant, currency) * item.quantity)}
+                          {formatPrice(pricing.discounted * item.quantity)}
                         </div>
                       </div>
                     </div>
                   </div>
-                ))
+                  );
+                })
               )}
             </div>
 

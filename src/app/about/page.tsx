@@ -28,7 +28,7 @@ export default function AboutPage() {
               Born in the heart of Africa — where the sun warms ancient soil and legacy is carried in the names we bear — MBINGA is more than a fragrance house. It is presence, identity, and earned distinction.
             </p>
             <p>
-              In Shona culture, Mbinga speaks of strength, resilience, and a position earned through vision and action — a person of substance who commands respect without raising their voice. MBINGA perfumes carry this spirit: each scent embodies legacy, power, and quiet authority.
+              MBINGA speaks of strength, resilience, and a distinction earned through vision and action. Rooted in African heritage, it embodies a spirit of ambition, character, and timeless elegance — the mark of someone who commands respect without raising their voice. MBINGA perfumes carry this spirit: each scent embodies legacy, power, and quiet authority.
             </p>
             <p>
               Each fragrance is deliberate, layered, and intentional: smoky Oud, glowing amber, refined spice — crafted to leave a lasting impression.

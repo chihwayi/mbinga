@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Product } from "@/types";
-import { sortVariantsBySize, getVariantPrice } from "@/types";
+import { sortVariantsBySize } from "@/types";
+import { getVariantPricing } from "@/lib/discount";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
@@ -46,18 +47,20 @@ export default function AddToCartSection({ product }: { product: Product }) {
 
   if (!selectedVariant) {
     return (
-      <div className="mt-auto pt-8 border-t border-obsidian/10 text-obsidian/50 text-sm">
+      <div className="mt-auto pt-8 border-t border-white/10 text-white/50 text-sm">
         This fragrance is currently unavailable.
       </div>
     );
   }
 
+  const pricing = getVariantPricing(product, selectedVariant, currency);
+
   return (
-    <div className="flex flex-col gap-4 mt-auto pt-8 border-t border-obsidian/10">
+    <div className="flex flex-col gap-4 mt-auto pt-8 border-t border-white/10">
       {/* Size Selector */}
       {sortedVariants.length > 1 && (
         <div>
-          <p className="text-xs uppercase tracking-widest text-obsidian/40 mb-2">Size</p>
+          <p className="text-xs uppercase tracking-widest text-white/40 mb-2">Size</p>
           <div className="flex gap-2">
             {sortedVariants.map((variant) => (
               <button
@@ -69,8 +72,8 @@ export default function AddToCartSection({ product }: { product: Product }) {
                   "px-4 py-2 border text-sm transition-colors",
                   variant.id === selectedVariant.id
                     ? "border-gold bg-gold text-obsidian font-medium"
-                    : "border-obsidian/20 text-obsidian/70 hover:border-gold",
-                  variant.stock === 0 && "opacity-30 cursor-not-allowed hover:border-obsidian/20"
+                    : "border-white/20 text-white/70 hover:border-gold",
+                  variant.stock === 0 && "opacity-30 cursor-not-allowed hover:border-white/20"
                 )}
               >
                 {variant.sizeMl}ml
@@ -98,23 +101,33 @@ export default function AddToCartSection({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-        <div className="text-3xl font-serif text-obsidian">{formatPrice(getVariantPrice(selectedVariant, currency))}</div>
+        <div className="flex items-center gap-3">
+          {pricing.active && (
+            <span className="text-lg text-white/40 line-through">{formatPrice(pricing.original)}</span>
+          )}
+          <div className="text-3xl font-serif text-cream">{formatPrice(pricing.discounted)}</div>
+          {pricing.active && (
+            <span className="text-xs font-bold uppercase tracking-widest bg-gold text-obsidian px-2 py-1 rounded animate-pulse">
+              -{pricing.percent}%
+            </span>
+          )}
+        </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {/* Quantity Selector */}
           {!isOutOfStock && (
-            <div className="flex items-center justify-center border border-obsidian/20 h-12 flex-shrink-0">
+            <div className="flex items-center justify-center border border-white/20 h-12 flex-shrink-0">
               <button
                 onClick={handleDecrement}
-                className="w-10 h-full flex items-center justify-center text-obsidian/50 hover:text-gold hover:bg-obsidian/5 transition-colors"
+                className="w-10 h-full flex items-center justify-center text-white/50 hover:text-gold hover:bg-white/5 transition-colors"
                 disabled={quantity <= 1}
               >
                 <Minus size={16} />
               </button>
-              <div className="w-12 text-center font-medium text-obsidian">{quantity}</div>
+              <div className="w-12 text-center font-medium text-cream">{quantity}</div>
               <button
                 onClick={handleIncrement}
-                className="w-10 h-full flex items-center justify-center text-obsidian/50 hover:text-gold hover:bg-obsidian/5 transition-colors"
+                className="w-10 h-full flex items-center justify-center text-white/50 hover:text-gold hover:bg-white/5 transition-colors"
                 disabled={quantity >= selectedVariant.stock}
               >
                 <Plus size={16} />
@@ -129,7 +142,7 @@ export default function AddToCartSection({ product }: { product: Product }) {
             className={clsx(
               "h-12 w-full sm:w-auto px-4 sm:px-8 uppercase tracking-widest font-semibold flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base transition-all duration-300 border border-gold",
               isOutOfStock
-                ? "bg-obsidian/10 text-obsidian/30 cursor-not-allowed border-none"
+                ? "bg-white/10 text-white/30 cursor-not-allowed border-none"
                 : "bg-obsidian text-gold hover:bg-gold hover:text-obsidian"
             )}
           >

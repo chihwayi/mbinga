@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
-import { getVariantPrice } from "@/types";
+import { getVariantPricing } from "@/lib/discount";
 import Link from "next/link";
 import { ArrowLeft, CreditCard } from "lucide-react";
 import Image from "next/image";
@@ -69,7 +69,7 @@ export default function CheckoutPage() {
           items:           cart.map(i => ({
             id:       i.variant.id,
             name:     `${i.product.name} (${i.variant.sizeMl}ml)`,
-            price:    i.variant.priceZar,
+            price:    getVariantPricing(i.product, i.variant, "ZAR").discounted,
             quantity: i.quantity,
             image:    i.product.image,
             slug:     i.product.slug,
@@ -157,7 +157,9 @@ export default function CheckoutPage() {
             <div className="bg-white/5 p-8 rounded-2xl h-fit border border-white/10">
                 <h2 className="text-2xl font-serif mb-6">Order Summary</h2>
                 <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto pr-2">
-                    {cart.map((item) => (
+                    {cart.map((item) => {
+                        const pricing = getVariantPricing(item.product, item.variant, currency);
+                        return (
                         <div key={item.variant.id} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-white/5">
                                 <Image
@@ -169,13 +171,17 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex-grow">
                                 <h3 className="font-medium">{item.product.name}</h3>
-                                <p className="text-white/40 text-sm">{item.variant.sizeMl}ml · Qty: {item.quantity}</p>
+                                <p className="text-white/40 text-sm">
+                                    {item.variant.sizeMl}ml · Qty: {item.quantity}
+                                    {pricing.active && <span className="ml-1 text-gold">· -{pricing.percent}%</span>}
+                                </p>
                             </div>
                             <div className="text-gold font-medium">
-                                {formatPrice(getVariantPrice(item.variant, currency) * item.quantity)}
+                                {formatPrice(pricing.discounted * item.quantity)}
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <div className="border-t border-white/10 pt-6 space-y-2">
@@ -185,7 +191,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between text-white/60">
                         <span>Delivery</span>
-                        <span>TBD</span>
+                        <span className="text-gold">FREE</span>
                     </div>
                     <div className="flex justify-between text-xl font-serif text-gold pt-4 border-t border-white/10 mt-4">
                         <span>Total</span>

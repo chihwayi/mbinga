@@ -18,7 +18,7 @@ export default function Story() {
             A Legacy in <br /> Every Bottle
           </h2>
           <p className="text-cream/80 text-lg leading-relaxed mb-10 font-light">
-            In Shona culture, Mbinga speaks of strength, resilience, and a position earned through vision and action. Our fragrances embody this spirit, weaving together rare ingredients from across the continent to create scents that command respect and leave a lasting impression.
+            MBINGA speaks of strength, resilience, and a distinction earned through vision and action. Rooted in African heritage, it embodies a spirit of ambition, character, and timeless elegance — a philosophy woven into every fragrance we craft, using rare ingredients from across the continent to create scents that command respect and leave a lasting impression.
           </p>
           
           <Link href="/about" className="inline-block px-8 py-4 bg-obsidian border border-gold text-gold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300">

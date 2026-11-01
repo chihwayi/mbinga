@@ -1,0 +1,5 @@
+-- Adds optional percentage-based, time-bound discounts for the November
+-- launch promotion and any future storewide/per-product sales.
+ALTER TABLE "Product" ADD COLUMN "discountPercent" REAL;
+ALTER TABLE "Product" ADD COLUMN "discountStartsAt" DATETIME;
+ALTER TABLE "Product" ADD COLUMN "discountEndsAt" DATETIME;

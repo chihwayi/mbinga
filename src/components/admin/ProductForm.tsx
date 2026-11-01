@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createProduct, updateProduct } from "@/actions/products";
 import { uploadImage, uploadImageFromUrl } from "@/actions/upload";
+import { usdToZar, FIXED_USD_TO_ZAR_RATE } from "@/lib/currency";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
@@ -16,18 +17,29 @@ interface Variant {
 }
 
 interface Product {
-  id:          string;
-  name:        string;
-  slug:        string;
-  tagline:     string;
-  description: string;
-  story:       string;
-  category:    string;
-  variants:    Variant[];
-  notes:       string;
-  ingredients: string;
-  image:       string;
-  accentColor: string;
+  id:                string;
+  name:              string;
+  slug:              string;
+  tagline:           string;
+  description:       string;
+  story:             string;
+  category:          string;
+  variants:          Variant[];
+  notes:             string;
+  ingredients:       string;
+  image:             string;
+  accentColor:       string;
+  discountPercent?:  number | null;
+  discountStartsAt?: Date | string | null;
+  discountEndsAt?:   Date | string | null;
+}
+
+function toDatetimeLocal(value?: Date | string | null): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 const DEFAULT_VARIANTS: Variant[] = [
@@ -58,6 +70,9 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [pastedUrl, setPastedUrl] = useState("");
   const [isFetchingUrl, setIsFetchingUrl] = useState(false);
   const [accentColor, setAccentColor] = useState(product?.accentColor || "#D4AF37");
+  const [discountPercent, setDiscountPercent] = useState(product?.discountPercent?.toString() ?? "");
+  const [discountStartsAt, setDiscountStartsAt] = useState(toDatetimeLocal(product?.discountStartsAt));
+  const [discountEndsAt, setDiscountEndsAt] = useState(toDatetimeLocal(product?.discountEndsAt));
   const [variants, setVariants] = useState<Variant[]>(
     product?.variants && product.variants.length > 0
       ? [...product.variants].sort((a, b) => b.sizeMl - a.sizeMl)
@@ -159,7 +174,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             <input type="hidden" name="variants" value={JSON.stringify(variants)} />
             <label className="block text-white/60 text-sm mb-2">Sizes, Prices & Stock</label>
             <p className="text-white/30 text-xs mb-3">
-              Set the Rand (SA) and USD (Zimbabwe) price independently for each size — they are not auto-converted.
+              Enter the USD price — the Rand price is calculated automatically at a fixed rate of $1 = R{FIXED_USD_TO_ZAR_RATE}.
             </p>
             <div className="space-y-3">
               {variants.map((v, i) => (
@@ -178,23 +193,15 @@ export default function ProductForm({ product }: { product?: Product }) {
                     <input
                       type="number"
                       step="0.01"
-                      value={v.priceZar}
-                      onChange={(e) => updateVariant(i, "priceZar", Number(e.target.value))}
-                      placeholder="Price (R)"
-                      required
-                      className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      type="number"
-                      step="0.01"
                       value={v.priceUsd}
                       onChange={(e) => updateVariant(i, "priceUsd", Number(e.target.value))}
                       placeholder="Price ($)"
                       required
                       className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
                     />
+                  </div>
+                  <div className="flex-1 text-white/40 text-sm px-3 py-2 bg-black/10 border border-white/5 rounded-lg">
+                    ≈ R{usdToZar(v.priceUsd).toFixed(2)}
                   </div>
                   <div className="w-20">
                     <input
@@ -238,6 +245,40 @@ export default function ProductForm({ product }: { product?: Product }) {
               <option value="Men">Men</option>
               <option value="Women">Women</option>
             </select>
+          </div>
+
+          <div>
+            <label className="block text-white/60 text-sm mb-2">Discount / Promotion</label>
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                type="number"
+                name="discountPercent"
+                step="1"
+                min="0"
+                max="90"
+                value={discountPercent}
+                onChange={(e) => setDiscountPercent(e.target.value)}
+                placeholder="% off"
+                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+              />
+              <input
+                type="datetime-local"
+                name="discountStartsAt"
+                value={discountStartsAt}
+                onChange={(e) => setDiscountStartsAt(e.target.value)}
+                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+              />
+              <input
+                type="datetime-local"
+                name="discountEndsAt"
+                value={discountEndsAt}
+                onChange={(e) => setDiscountEndsAt(e.target.value)}
+                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
+              />
+            </div>
+            <p className="text-white/30 text-xs mt-2">
+              Leave the percentage blank for no discount. Leave the dates blank for an indefinite discount.
+            </p>
           </div>
         </div>
 
