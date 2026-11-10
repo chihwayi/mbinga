@@ -169,6 +169,11 @@ export async function applyBulkDiscount(percent: number | null, startsAt: string
 
   revalidatePath("/admin/products");
   revalidatePath("/");
+  // Product detail pages are statically generated per slug and only update
+  // when explicitly revalidated — a per-slug revalidatePath call wouldn't
+  // reach products this bulk action didn't already know about, so revalidate
+  // the whole dynamic route template in one call instead.
+  revalidatePath("/product/[slug]", "page");
   return { success: true, updated: result.count };
 }
 
@@ -176,10 +181,11 @@ export async function deleteProduct(id: string) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
-  await prisma.product.delete({ where: { id } })
+  const deleted = await prisma.product.delete({ where: { id } })
 
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidatePath(`/product/${deleted.slug}`);
 }
 
 export async function getProducts() {
