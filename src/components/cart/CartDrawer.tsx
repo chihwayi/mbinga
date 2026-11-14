@@ -3,6 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { getVariantPricing } from "@/lib/discount";
+import { getVariantImage } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -81,7 +82,7 @@ export default function CartDrawer() {
                   >
                     <div className="relative w-20 h-20 bg-white/5 rounded-md overflow-hidden shrink-0">
                       <Image
-                        src={getCartImage(item.product.image)}
+                        src={getCartImage(getVariantImage(item.product, item.variant))}
                         alt={item.product.name}
                         fill
                         className="object-cover"

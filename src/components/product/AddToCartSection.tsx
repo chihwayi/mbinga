@@ -1,28 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/types";
-import { sortVariantsBySize } from "@/types";
 import { getVariantPricing } from "@/lib/discount";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { useProductVariant } from "@/context/ProductVariantContext";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import clsx from "clsx";
 
-export default function AddToCartSection({ product }: { product: Product }) {
-  const sortedVariants = sortVariantsBySize(product.variants);
-  const [selectedVariantId, setSelectedVariantId] = useState(
-    sortedVariants.find(v => v.stock > 0)?.id ?? sortedVariants[0]?.id
-  );
-  const selectedVariant = sortedVariants.find(v => v.id === selectedVariantId) ?? sortedVariants[0];
-
+export default function AddToCartSection() {
+  const { product, sortedVariants, selectedVariant, selectVariant } = useProductVariant();
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { currency, formatPrice } = useCurrency();
   const isOutOfStock = !selectedVariant || selectedVariant.stock === 0;
 
   const handleSelectVariant = (variantId: string) => {
-    setSelectedVariantId(variantId);
+    selectVariant(variantId);
     setQuantity(1);
   };
 

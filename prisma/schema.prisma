@@ -34,9 +34,10 @@ model Product {
   description String
   story       String
   category    String
+  collection  String   @default("prestige") // "prestige" (Extrait de Parfum, boxed) or "breeze" (Eau de Parfum, no box)
   notes       String // Stored as JSON string or comma-separated
   ingredients String // Stored as JSON string or comma-separated
-  image       String
+  image       String // Primary/cover image — the 100ml bottle shot
   accentColor String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -56,6 +57,7 @@ model ProductVariant {
   priceUsd  Float
   priceZar  Float
   stock     Int      @default(0)
+  image     String? // Falls back to the product's primary image when not set
   createdAt DateTime @default(now())
 }
 

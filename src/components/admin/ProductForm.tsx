@@ -14,6 +14,7 @@ interface Variant {
   priceUsd:  number;
   priceZar:  number;
   stock:     number;
+  image:     string | null;
 }
 
 interface Product {
@@ -24,6 +25,7 @@ interface Product {
   description:       string;
   story:             string;
   category:          string;
+  collection?:       string;
   variants:          Variant[];
   notes:             string;
   ingredients:       string;
@@ -42,10 +44,10 @@ function toDatetimeLocal(value?: Date | string | null): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Both collections are sold in the same two sizes, 100ml listed first.
 const DEFAULT_VARIANTS: Variant[] = [
-  { sizeMl: 100, priceUsd: 0, priceZar: 0, stock: 0 },
-  { sizeMl: 50,  priceUsd: 0, priceZar: 0, stock: 0 },
-  { sizeMl: 35,  priceUsd: 0, priceZar: 0, stock: 0 },
+  { sizeMl: 100, priceUsd: 0, priceZar: 0, stock: 0, image: null },
+  { sizeMl: 50,  priceUsd: 0, priceZar: 0, stock: 0, image: null },
 ];
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -79,16 +81,35 @@ export default function ProductForm({ product }: { product?: Product }) {
       : DEFAULT_VARIANTS
   );
 
-  const updateVariant = (index: number, field: keyof Variant, value: number) => {
+  const updateVariant = (index: number, field: keyof Variant, value: number | string | null) => {
     setVariants(prev => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
   };
 
   const addVariant = () => {
-    setVariants(prev => [...prev, { sizeMl: 0, priceUsd: 0, priceZar: 0, stock: 0 }]);
+    setVariants(prev => [...prev, { sizeMl: 0, priceUsd: 0, priceZar: 0, stock: 0, image: null }]);
   };
 
   const removeVariant = (index: number) => {
     setVariants(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const [uploadingVariantIndex, setUploadingVariantIndex] = useState<number | null>(null);
+
+  const handleVariantFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingVariantIndex(index);
+    const fd = new FormData();
+    fd.append("file", file);
+
+    const result = await uploadImage(fd);
+    if (result.success && result.url) {
+      updateVariant(index, "image", result.url);
+    } else {
+      alert("Failed to upload image");
+    }
+    setUploadingVariantIndex(null);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,14 +193,36 @@ export default function ProductForm({ product }: { product?: Product }) {
 
           <div>
             <input type="hidden" name="variants" value={JSON.stringify(variants)} />
-            <label className="block text-white/60 text-sm mb-2">Sizes, Prices & Stock</label>
+            <label className="block text-white/60 text-sm mb-2">Sizes, Prices, Stock & Images</label>
             <p className="text-white/30 text-xs mb-3">
               Enter the USD price — the Rand price is calculated automatically at a fixed rate of $1 = R{FIXED_USD_TO_ZAR_RATE}.
+              Each size can have its own bottle photo; leave blank to reuse the main Product Image below.
             </p>
             <div className="space-y-3">
               {variants.map((v, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="w-16">
+                <div key={i} className="flex items-center gap-3 bg-black/10 border border-white/5 rounded-lg p-3">
+                  <label className="relative w-14 h-14 flex-shrink-0 bg-black/20 border border-white/10 rounded-lg overflow-hidden cursor-pointer group">
+                    {v.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={v.image} alt={`${v.sizeMl}ml`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Upload size={14} className="text-white/30" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[9px] text-white text-center px-1">
+                      {uploadingVariantIndex === i ? "…" : "Change"}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleVariantFileUpload(i, e)}
+                      disabled={uploadingVariantIndex === i}
+                    />
+                  </label>
+
+                  <div className="w-16 flex-shrink-0">
                     <input
                       type="number"
                       value={v.sizeMl}
@@ -203,7 +246,7 @@ export default function ProductForm({ product }: { product?: Product }) {
                   <div className="flex-1 text-white/40 text-sm px-3 py-2 bg-black/10 border border-white/5 rounded-lg">
                     ≈ R{usdToZar(v.priceUsd).toFixed(2)}
                   </div>
-                  <div className="w-20">
+                  <div className="w-20 flex-shrink-0">
                     <input
                       type="number"
                       value={v.stock}
@@ -217,7 +260,7 @@ export default function ProductForm({ product }: { product?: Product }) {
                     type="button"
                     onClick={() => removeVariant(i)}
                     disabled={variants.length <= 1}
-                    className="text-white/40 hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed px-2"
+                    className="text-white/40 hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed px-2 flex-shrink-0"
                     aria-label="Remove size"
                   >
                     ✕
@@ -232,6 +275,18 @@ export default function ProductForm({ product }: { product?: Product }) {
                 + Add another size
               </button>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-white/60 text-sm mb-2">Collection</label>
+            <select
+              name="collection"
+              defaultValue={product?.collection || "prestige"}
+              className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+            >
+              <option value="prestige">Prestige — Extrait de Parfum, boxed</option>
+              <option value="breeze">Breeze — Eau de Parfum, no box</option>
+            </select>
           </div>
 
           <div>
@@ -339,7 +394,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             </div>
 
             <div>
-                <label className="block text-white/60 text-sm mb-2">Product Image</label>
+                <label className="block text-white/60 text-sm mb-2">Product Image (100ml — used as the cover/fallback image)</label>
                 <input type="hidden" name="image" value={imageUrl} required />
                 <div className="space-y-3">
                   {imageUrl ? (

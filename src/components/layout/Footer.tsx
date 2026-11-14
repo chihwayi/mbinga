@@ -24,9 +24,8 @@ export default function Footer() {
           <ul className="space-y-3">
             {[
               { label: "All Fragrances", href: "/" },
-              { label: "For Him", href: "/#collections" },
-              { label: "For Her", href: "/#collections" },
-              { label: "Unisex", href: "/#collections" },
+              { label: "Prestige Collection", href: "/#collections" },
+              { label: "Breeze Collection", href: "/#breeze-collection" },
             ].map((item) => (
               <li key={item.label}>
                 <Link href={item.href} className="text-cream/70 hover:text-gold transition-colors text-sm hover:pl-1 block">

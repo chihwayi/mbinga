@@ -29,11 +29,25 @@ export default async function Home() {
 
   const slides = activeSlides.map(toSlideDTO)
 
+  const prestigeProducts = products.filter(p => p.collection !== "breeze")
+  const breezeProducts   = products.filter(p => p.collection === "breeze")
+
   return (
     <main className="min-h-screen bg-black text-cream selection:bg-gold selection:text-black">
       <Navbar />
       <Hero slides={slides} />
-      <Collection products={products} />
+      <Collection
+        id="collections"
+        products={prestigeProducts}
+        title="Prestige Collection"
+        subtitle="Extrait de Parfum, housed in its own luxury box — our premium range."
+      />
+      <Collection
+        id="breeze-collection"
+        products={breezeProducts}
+        title="Breeze Collection"
+        subtitle="Eau de Parfum, lighter and more accessible — everyday MBINGA, no box."
+      />
       <LazyLoadWrapper>
         <Films />
       </LazyLoadWrapper>

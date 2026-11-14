@@ -25,7 +25,7 @@ function mapRow(row: Product & { variants: ProductVariant[] }) {
     ...row,
     notes: parseList(row.notes),
     ingredients: parseList(row.ingredients),
-    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock })),
+    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
   }
 }
 
@@ -34,12 +34,14 @@ interface VariantInput {
   priceUsd: number;
   priceZar: number;
   stock:    number;
+  image:    string | null;
 }
 
-// The admin form serializes its variant rows (size/price/stock) as JSON into
-// a single hidden field, since a plain FormData can't carry a nested array.
-// Only USD is entered by the admin — ZAR is always derived from it using the
-// fixed rate, so the two currencies can never drift out of sync.
+// The admin form serializes its variant rows (size/price/stock/image) as
+// JSON into a single hidden field, since a plain FormData can't carry a
+// nested array. Only USD is entered by the admin — ZAR is always derived
+// from it using the fixed rate, so the two currencies can never drift out
+// of sync.
 function parseVariants(formData: FormData): VariantInput[] {
   const raw = formData.get("variants") as string | null
   if (!raw) return []
@@ -52,6 +54,7 @@ function parseVariants(formData: FormData): VariantInput[] {
         priceUsd: Number(v.priceUsd),
         priceZar: usdToZar(Number(v.priceUsd)),
         stock:    Number(v.stock),
+        image:    typeof v.image === "string" && v.image ? v.image : null,
       }))
       .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.priceUsd))
   } catch {
@@ -93,13 +96,14 @@ export async function createProduct(formData: FormData) {
       description: formData.get("description") as string,
       story:       formData.get("story") as string,
       category:    formData.get("category") as string,
+      collection:  (formData.get("collection") as string) || "prestige",
       notes:       JSON.stringify(notes),
       ingredients: JSON.stringify(ingredients),
       image:       formData.get("image") as string,
       accentColor: formData.get("accentColor") as string,
       ...discount,
       variants: {
-        create: variants.map(v => ({ sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock })),
+        create: variants.map(v => ({ sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
       },
     },
   })
@@ -129,6 +133,7 @@ export async function updateProduct(id: string, formData: FormData) {
         description: formData.get("description") as string,
         story:       formData.get("story") as string,
         category:    formData.get("category") as string,
+        collection:  (formData.get("collection") as string) || "prestige",
         notes:       JSON.stringify(notes),
         ingredients: JSON.stringify(ingredients),
         image:       formData.get("image") as string,
@@ -141,7 +146,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
     for (const v of variants) {
       await tx.productVariant.create({
-        data: { productId: id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock },
+        data: { productId: id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image },
       })
     }
   })

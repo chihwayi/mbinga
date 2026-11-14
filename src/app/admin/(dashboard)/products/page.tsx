@@ -88,9 +88,18 @@ export default async function AdminProducts() {
                     </div>
                   </td>
                   <td className="p-6 text-white/60">
-                    <span className="px-2 py-1 rounded border border-white/10 text-xs uppercase tracking-wider">
-                        {product.category}
-                    </span>
+                    <div className="flex flex-col gap-1 items-start">
+                      <span className={`px-2 py-1 rounded border text-xs uppercase tracking-wider ${
+                        product.collection === "breeze"
+                          ? "border-sky-400/30 text-sky-300"
+                          : "border-gold/30 text-gold"
+                      }`}>
+                          {product.collection === "breeze" ? "Breeze" : "Prestige"}
+                      </span>
+                      <span className="px-2 py-1 rounded border border-white/10 text-xs uppercase tracking-wider">
+                          {product.category}
+                      </span>
+                    </div>
                   </td>
                   <td className="p-6 text-gold font-serif text-lg">
                     {product.variants.length > 0

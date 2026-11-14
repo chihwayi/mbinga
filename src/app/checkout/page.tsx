@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { getVariantPricing } from "@/lib/discount";
+import { getVariantImage } from "@/types";
 import Link from "next/link";
 import { ArrowLeft, CreditCard } from "lucide-react";
 import Image from "next/image";
@@ -71,7 +72,7 @@ export default function CheckoutPage() {
             name:     `${i.product.name} (${i.variant.sizeMl}ml)`,
             price:    getVariantPricing(i.product, i.variant, "ZAR").discounted,
             quantity: i.quantity,
-            image:    i.product.image,
+            image:    getVariantImage(i.product, i.variant),
             slug:     i.product.slug,
           })),
           customerName:    customer,
@@ -163,7 +164,7 @@ export default function CheckoutPage() {
                         <div key={item.variant.id} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-white/5">
                                 <Image
-                                    src={getCartImage(item.product.image)}
+                                    src={getCartImage(getVariantImage(item.product, item.variant))}
                                     alt={item.product.name}
                                     fill
                                     className="object-cover"

@@ -30,6 +30,13 @@ interface Product {
   discountEndsAt?: Date | string | null;
 }
 
+interface CollectionProps {
+  products: Product[];
+  title: string;
+  subtitle?: string;
+  id?: string;
+}
+
 function getStartingPrice(product: Product, currency: "USD" | "ZAR"): { original: number; discounted: number; active: boolean } | null {
   if (product.variants.length === 0) return null;
   const original = Math.min(...product.variants.map(v => currency === "ZAR" ? v.priceZar : v.priceUsd));
@@ -48,7 +55,7 @@ function getProductImage(product: Product) {
   return src;
 }
 
-export default function Collection({ products }: { products: Product[] }) {
+export default function Collection({ products, title, subtitle, id }: CollectionProps) {
   const { currency, formatPrice } = useCurrency();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
@@ -110,14 +117,21 @@ export default function Collection({ products }: { products: Product[] }) {
     };
   }, []);
 
+  if (products.length === 0) return null;
+
   return (
-    <section id="collections" className="py-32 bg-obsidian overflow-hidden">
+    <section id={id} className="py-32 bg-obsidian overflow-hidden">
       <div className="px-6 md:px-12 mb-16 flex justify-between items-end">
-        <h2 className="font-serif text-4xl md:text-6xl text-gold tracking-widest">
-          Signature Collection
-        </h2>
+        <div>
+          <h2 className="font-serif text-4xl md:text-6xl text-gold tracking-widest">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-white/40 text-sm md:text-base mt-3 max-w-xl font-light">{subtitle}</p>
+          )}
+        </div>
         <div className="hidden md:block w-48 h-[1px] bg-warm-grey relative overflow-hidden">
-            <motion.div 
+            <motion.div
                 style={{ scaleX: scrollXProgress, transformOrigin: "0%" }}
                 className="absolute inset-0 bg-gold"
             />

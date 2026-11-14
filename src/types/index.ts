@@ -1,9 +1,17 @@
+export type Collection = "prestige" | "breeze";
+
+export const COLLECTION_LABELS: Record<Collection, string> = {
+  prestige: "Prestige Collection",
+  breeze: "Breeze Collection",
+};
+
 export interface ProductVariant {
   id: string;
   sizeMl: number;
   priceUsd: number;
   priceZar: number;
   stock: number;
+  image?: string | null;
 }
 
 export interface Product {
@@ -14,6 +22,7 @@ export interface Product {
   description: string;
   story: string;
   category: string;
+  collection: Collection;
   notes: string[];
   ingredients: string[];
   image: string;
@@ -26,8 +35,8 @@ export interface Product {
   updatedAt?: Date;
 }
 
-// MBINGA lists sizes largest-first (100ml, then 50ml, then 35ml) — the
-// reverse of aromatic-scents' ascending order.
+// MBINGA lists sizes largest-first (100ml, then 50ml) — the reverse of
+// aromatic-scents' ascending order.
 export function sortVariantsBySize(variants: ProductVariant[]): ProductVariant[] {
   return [...variants].sort((a, b) => b.sizeMl - a.sizeMl);
 }
@@ -37,4 +46,10 @@ export function sortVariantsBySize(variants: ProductVariant[]): ProductVariant[]
 // matches the active currency.
 export function getVariantPrice(variant: ProductVariant, currency: "USD" | "ZAR"): number {
   return currency === "ZAR" ? variant.priceZar : variant.priceUsd;
+}
+
+// Each size can have its own bottle photo; falls back to the product's
+// primary image (the 100ml shot) when a variant doesn't have one set.
+export function getVariantImage(product: { image: string }, variant: ProductVariant): string {
+  return variant.image || product.image;
 }
