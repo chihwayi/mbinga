@@ -1,9 +1,14 @@
 import { getSettings } from "@/actions/settings";
+import { getPricingRate } from "@/actions/pricing";
 import PasswordChangeForm from "@/components/admin/PasswordChangeForm";
 import ContactSettingsForm from "@/components/admin/ContactSettingsForm";
+import PricingSettingsForm from "@/components/admin/PricingSettingsForm";
 
 export default async function AdminSettings() {
-  const settings = await getSettings();
+  const [settings, pricingRate] = await Promise.all([
+    getSettings(),
+    getPricingRate(),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -16,6 +21,10 @@ export default async function AdminSettings() {
         <ContactSettingsForm
           contactEmail={settings.contact_email}
           contactWhatsapp={settings.contact_whatsapp}
+        />
+        <PricingSettingsForm
+          marginPercent={settings.usd_zar_margin_percent}
+          prevailingRate={pricingRate.prevailingRate}
         />
         <PasswordChangeForm />
       </div>

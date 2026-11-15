@@ -54,8 +54,9 @@ model ProductVariant {
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   sizeMl    Int
-  priceUsd  Float
-  priceZar  Float
+  targetUsd Float    @default(0) // Admin's raw reference price — the stable anchor recalculation derives from
+  priceUsd  Float // Final protected USD price shown to customers (backward-derived, clean)
+  priceZar  Float // Final protected ZAR price shown to customers (forward-derived, clean)
   stock     Int      @default(0)
   image     String? // Falls back to the product's primary image when not set
   createdAt DateTime @default(now())

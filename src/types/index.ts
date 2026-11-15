@@ -8,6 +8,7 @@ export const COLLECTION_LABELS: Record<Collection, string> = {
 export interface ProductVariant {
   id: string;
   sizeMl: number;
+  targetUsd: number;
   priceUsd: number;
   priceZar: number;
   stock: number;
@@ -41,9 +42,9 @@ export function sortVariantsBySize(variants: ProductVariant[]): ProductVariant[]
   return [...variants].sort((a, b) => b.sizeMl - a.sizeMl);
 }
 
-// The admin only enters a USD price — the Rand amount is derived from it at
-// a fixed rate (see src/lib/currency.ts) — pick the stored amount that
-// matches the active currency.
+// priceUsd/priceZar are the final, protected prices shown to customers
+// (see src/lib/currency.ts) — pick the stored amount that matches the
+// active currency.
 export function getVariantPrice(variant: ProductVariant, currency: "USD" | "ZAR"): number {
   return currency === "ZAR" ? variant.priceZar : variant.priceUsd;
 }

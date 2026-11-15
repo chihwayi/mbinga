@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createProduct, updateProduct } from "@/actions/products";
 import { uploadImage, uploadImageFromUrl } from "@/actions/upload";
-import { usdToZar, FIXED_USD_TO_ZAR_RATE } from "@/lib/currency";
+import { getPricingRate } from "@/actions/pricing";
+import { computeProtectedPricing } from "@/lib/currency";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
 interface Variant {
-  id?:       string;
-  sizeMl:    number;
-  priceUsd:  number;
-  priceZar:  number;
-  stock:     number;
-  image:     string | null;
+  id?:        string;
+  sizeMl:     number;
+  targetUsd:  number;
+  priceUsd:   number;
+  priceZar:   number;
+  stock:      number;
+  image:      string | null;
 }
 
 interface Product {
@@ -46,9 +48,13 @@ function toDatetimeLocal(value?: Date | string | null): string {
 
 // Both collections are sold in the same two sizes, 100ml listed first.
 const DEFAULT_VARIANTS: Variant[] = [
-  { sizeMl: 100, priceUsd: 0, priceZar: 0, stock: 0, image: null },
-  { sizeMl: 50,  priceUsd: 0, priceZar: 0, stock: 0, image: null },
+  { sizeMl: 100, targetUsd: 0, priceUsd: 0, priceZar: 0, stock: 0, image: null },
+  { sizeMl: 50,  targetUsd: 0, priceUsd: 0, priceZar: 0, stock: 0, image: null },
 ];
+
+// Fallback used for the live preview only, before the real rate/margin load
+// from the server — the actual save always recomputes with fresh values.
+const FALLBACK_PRICING_RATE = { prevailingRate: 17, marginPercent: 6 };
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -80,13 +86,18 @@ export default function ProductForm({ product }: { product?: Product }) {
       ? [...product.variants].sort((a, b) => b.sizeMl - a.sizeMl)
       : DEFAULT_VARIANTS
   );
+  const [pricingRate, setPricingRate] = useState(FALLBACK_PRICING_RATE);
+
+  useEffect(() => {
+    getPricingRate().then(setPricingRate).catch(() => {});
+  }, []);
 
   const updateVariant = (index: number, field: keyof Variant, value: number | string | null) => {
     setVariants(prev => prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
   };
 
   const addVariant = () => {
-    setVariants(prev => [...prev, { sizeMl: 0, priceUsd: 0, priceZar: 0, stock: 0, image: null }]);
+    setVariants(prev => [...prev, { sizeMl: 0, targetUsd: 0, priceUsd: 0, priceZar: 0, stock: 0, image: null }]);
   };
 
   const removeVariant = (index: number) => {
@@ -195,11 +206,16 @@ export default function ProductForm({ product }: { product?: Product }) {
             <input type="hidden" name="variants" value={JSON.stringify(variants)} />
             <label className="block text-white/60 text-sm mb-2">Sizes, Prices, Stock & Images</label>
             <p className="text-white/30 text-xs mb-3">
-              Enter the USD price — the Rand price is calculated automatically at a fixed rate of $1 = R{FIXED_USD_TO_ZAR_RATE}.
-              Each size can have its own bottle photo; leave blank to reuse the main Product Image below.
+              Enter a target USD price — the final USD and Rand prices shown to customers are calculated
+              automatically from the live exchange rate plus a protection margin
+              (currently {pricingRate.marginPercent}%, live rate ≈ R{pricingRate.prevailingRate.toFixed(2)}/$1),
+              then rounded up to a clean figure with no cents. Each size can have its own bottle photo;
+              leave blank to reuse the main Product Image below.
             </p>
             <div className="space-y-3">
-              {variants.map((v, i) => (
+              {variants.map((v, i) => {
+                const preview = computeProtectedPricing(v.targetUsd, pricingRate.prevailingRate, pricingRate.marginPercent);
+                return (
                 <div key={i} className="flex items-center gap-3 bg-black/10 border border-white/5 rounded-lg p-3">
                   <label className="relative w-14 h-14 flex-shrink-0 bg-black/20 border border-white/10 rounded-lg overflow-hidden cursor-pointer group">
                     {v.image ? (
@@ -236,15 +252,15 @@ export default function ProductForm({ product }: { product?: Product }) {
                     <input
                       type="number"
                       step="0.01"
-                      value={v.priceUsd}
-                      onChange={(e) => updateVariant(i, "priceUsd", Number(e.target.value))}
-                      placeholder="Price ($)"
+                      value={v.targetUsd}
+                      onChange={(e) => updateVariant(i, "targetUsd", Number(e.target.value))}
+                      placeholder="Target $"
                       required
                       className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold/50"
                     />
                   </div>
                   <div className="flex-1 text-white/40 text-sm px-3 py-2 bg-black/10 border border-white/5 rounded-lg">
-                    ≈ R{usdToZar(v.priceUsd).toFixed(2)}
+                    Final: R{preview.priceZar} / ${preview.priceUsd}
                   </div>
                   <div className="w-20 flex-shrink-0">
                     <input
@@ -266,7 +282,8 @@ export default function ProductForm({ product }: { product?: Product }) {
                     ✕
                   </button>
                 </div>
-              ))}
+                );
+              })}
               <button
                 type="button"
                 onClick={addVariant}

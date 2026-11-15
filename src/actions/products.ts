@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { usdToZar } from "@/lib/currency";
+import { computeProtectedPricing } from "@/lib/currency";
+import { getPricingRate } from "@/actions/pricing";
 import type { Product, ProductVariant } from "@prisma/client";
 
 // ─── Row → TypeScript shape ───────────────────────────────────────────────────
@@ -25,23 +26,24 @@ function mapRow(row: Product & { variants: ProductVariant[] }) {
     ...row,
     notes: parseList(row.notes),
     ingredients: parseList(row.ingredients),
-    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
+    variants: row.variants.map(v => ({ id: v.id, sizeMl: v.sizeMl, targetUsd: v.targetUsd, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
   }
 }
 
 interface VariantInput {
-  sizeMl:   number;
-  priceUsd: number;
-  priceZar: number;
-  stock:    number;
-  image:    string | null;
+  sizeMl:    number;
+  targetUsd: number;
+  stock:     number;
+  image:     string | null;
 }
 
-// The admin form serializes its variant rows (size/price/stock/image) as
-// JSON into a single hidden field, since a plain FormData can't carry a
-// nested array. Only USD is entered by the admin — ZAR is always derived
-// from it using the fixed rate, so the two currencies can never drift out
-// of sync.
+// The admin form serializes its variant rows (size/target price/stock/image)
+// as JSON into a single hidden field, since a plain FormData can't carry a
+// nested array. Only the target USD is entered by the admin — the final
+// priceUsd/priceZar shown to customers are derived from it server-side
+// (see computeProtectedPricing) using the live rate and margin in effect
+// right now, so they're always freshly computed rather than trusting
+// anything the client could have calculated.
 function parseVariants(formData: FormData): VariantInput[] {
   const raw = formData.get("variants") as string | null
   if (!raw) return []
@@ -50,16 +52,23 @@ function parseVariants(formData: FormData): VariantInput[] {
     if (!Array.isArray(parsed)) return []
     return parsed
       .map(v => ({
-        sizeMl:   Number(v.sizeMl),
-        priceUsd: Number(v.priceUsd),
-        priceZar: usdToZar(Number(v.priceUsd)),
-        stock:    Number(v.stock),
-        image:    typeof v.image === "string" && v.image ? v.image : null,
+        sizeMl:    Number(v.sizeMl),
+        targetUsd: Number(v.targetUsd),
+        stock:     Number(v.stock),
+        image:     typeof v.image === "string" && v.image ? v.image : null,
       }))
-      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.priceUsd))
+      .filter(v => Number.isFinite(v.sizeMl) && v.sizeMl > 0 && Number.isFinite(v.targetUsd))
   } catch {
     return []
   }
+}
+
+async function resolveVariantPricing(variants: VariantInput[]) {
+  const { prevailingRate, marginPercent } = await getPricingRate();
+  return variants.map(v => ({
+    ...v,
+    ...computeProtectedPricing(v.targetUsd, prevailingRate, marginPercent),
+  }));
 }
 
 // Discount inputs come from three separate form fields (percent, starts,
@@ -85,7 +94,7 @@ export async function createProduct(formData: FormData) {
 
   const notes       = (formData.get("notes") as string).split(",").map(s => s.trim()).filter(Boolean)
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
-  const variants     = parseVariants(formData)
+  const variants     = await resolveVariantPricing(parseVariants(formData))
   const discount     = parseDiscount(formData)
 
   await prisma.product.create({
@@ -103,7 +112,7 @@ export async function createProduct(formData: FormData) {
       accentColor: formData.get("accentColor") as string,
       ...discount,
       variants: {
-        create: variants.map(v => ({ sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
+        create: variants.map(v => ({ sizeMl: v.sizeMl, targetUsd: v.targetUsd, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image })),
       },
     },
   })
@@ -120,7 +129,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const slug        = formData.get("slug") as string
   const notes       = (formData.get("notes") as string).split(",").map(s => s.trim()).filter(Boolean)
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
-  const variants     = parseVariants(formData)
+  const variants     = await resolveVariantPricing(parseVariants(formData))
   const discount     = parseDiscount(formData)
 
   await prisma.$transaction(async (tx) => {
@@ -146,7 +155,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
     for (const v of variants) {
       await tx.productVariant.create({
-        data: { productId: id, sizeMl: v.sizeMl, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image },
+        data: { productId: id, sizeMl: v.sizeMl, targetUsd: v.targetUsd, priceUsd: v.priceUsd, priceZar: v.priceZar, stock: v.stock, image: v.image },
       })
     }
   })
