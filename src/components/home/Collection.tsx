@@ -55,7 +55,18 @@ function getProductImage(product: Product) {
   return src;
 }
 
-export default function Collection({ products, title, subtitle, id }: CollectionProps) {
+// Wrapper so the empty-collection case bails out before any hooks run —
+// CollectionCarousel's useScroll attaches to a ref on an element that only
+// renders when there are products, so calling that hook and then returning
+// null from the *same* component throws ("Container ref is defined but not
+// hydrated") once a collection (e.g. a brand-new Breeze catalog) has zero
+// products.
+export default function Collection(props: CollectionProps) {
+  if (props.products.length === 0) return null;
+  return <CollectionCarousel {...props} />;
+}
+
+function CollectionCarousel({ products, title, subtitle, id }: CollectionProps) {
   const { currency, formatPrice } = useCurrency();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
@@ -116,8 +127,6 @@ export default function Collection({ products, title, subtitle, id }: Collection
       container.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
-
-  if (products.length === 0) return null;
 
   return (
     <section id={id} className="py-32 bg-obsidian overflow-hidden">

@@ -91,7 +91,7 @@ export default function Hero({ slides = [] }: Props) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }}
-            className="relative w-[120px] h-[42px] md:w-[160px] md:h-[56px] mb-6 md:mb-8"
+            className="relative w-[300px] h-[105px] md:w-[400px] md:h-[140px] mb-6 md:mb-8"
             style={{ filter: "drop-shadow(0 0 20px rgba(212, 175, 55, 0.4))" }}
           >
             <Image src="/images/logo.svg" alt="MBINGA" fill className="object-contain" priority />
@@ -115,7 +115,7 @@ export default function Hero({ slides = [] }: Props) {
             </p>
 
             <Link
-              href="/#collection"
+              href="/#collections"
               className="mt-5 md:mt-7 px-10 py-4 bg-obsidian/80 backdrop-blur-sm border border-gold text-gold font-bold uppercase tracking-widest hover:bg-gold hover:text-obsidian transition-all duration-300 text-sm"
             >
               Discover Your Scent
