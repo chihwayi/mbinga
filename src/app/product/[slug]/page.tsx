@@ -113,10 +113,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               ) : (
                   <div className="mb-10 pb-8 border-b border-white/10">
                       <p className="text-gold text-xs uppercase tracking-[0.25em] mb-2">
-                          Eau de Parfum
+                          25% Fragrance Concentration | Eau de Parfum
                       </p>
                       <p className="text-white/60 font-light leading-relaxed">
-                          Part of the Breeze Collection — an everyday expression of MBINGA, lighter and more accessible, without the outer presentation box.
+                          Crafted with a 25% fragrance oil concentration, Breeze is a lighter, more accessible expression of MBINGA — everyday luxury, without the outer presentation box.
                       </p>
                   </div>
               )}
