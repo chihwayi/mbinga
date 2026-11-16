@@ -5,6 +5,7 @@ import { createProduct, updateProduct } from "@/actions/products";
 import { uploadImage, uploadImageFromUrl } from "@/actions/upload";
 import { getPricingRate } from "@/actions/pricing";
 import { computeProtectedPricing } from "@/lib/currency";
+import { slugify } from "@/lib/slugify";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
@@ -72,6 +73,9 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
 
 export default function ProductForm({ product }: { product?: Product }) {
   const isEditing = !!product;
+  const [name, setName] = useState(product?.name || "");
+  const [slug, setSlug] = useState(product?.slug || "");
+  const [slugEditedManually, setSlugEditedManually] = useState(isEditing);
   const [imageUrl, setImageUrl] = useState(product?.image || "");
   const [isUploading, setIsUploading] = useState(false);
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
@@ -174,7 +178,11 @@ export default function ProductForm({ product }: { product?: Product }) {
             <input
               type="text"
               name="name"
-              defaultValue={product?.name}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (!slugEditedManually) setSlug(slugify(e.target.value));
+              }}
               required
               className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
             />
@@ -185,10 +193,17 @@ export default function ProductForm({ product }: { product?: Product }) {
             <input
               type="text"
               name="slug"
-              defaultValue={product?.slug}
+              value={slug}
+              onChange={(e) => {
+                setSlugEditedManually(true);
+                setSlug(e.target.value);
+              }}
               required
               className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
             />
+            <p className="text-white/30 text-xs mt-1">
+              Auto-generated from the name — must be lowercase with hyphens, no spaces (e.g. velvet-empire).
+            </p>
           </div>
 
           <div>

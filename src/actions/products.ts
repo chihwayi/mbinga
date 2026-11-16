@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { computeProtectedPricing } from "@/lib/currency";
 import { getPricingRate } from "@/actions/pricing";
+import { slugify } from "@/lib/slugify";
 import type { Product, ProductVariant } from "@prisma/client";
 
 // ─── Row → TypeScript shape ───────────────────────────────────────────────────
@@ -96,11 +97,12 @@ export async function createProduct(formData: FormData) {
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
   const variants     = await resolveVariantPricing(parseVariants(formData))
   const discount     = parseDiscount(formData)
+  const slug         = slugify(formData.get("slug") as string)
 
   await prisma.product.create({
     data: {
       name:        formData.get("name") as string,
-      slug:        formData.get("slug") as string,
+      slug,
       tagline:     formData.get("tagline") as string,
       description: formData.get("description") as string,
       story:       formData.get("story") as string,
@@ -119,6 +121,7 @@ export async function createProduct(formData: FormData) {
 
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidatePath(`/product/${slug}`);
   redirect("/admin/products");
 }
 
@@ -126,7 +129,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
-  const slug        = formData.get("slug") as string
+  const slug        = slugify(formData.get("slug") as string)
   const notes       = (formData.get("notes") as string).split(",").map(s => s.trim()).filter(Boolean)
   const ingredients = (formData.get("ingredients") as string).split(",").map(s => s.trim()).filter(Boolean)
   const variants     = await resolveVariantPricing(parseVariants(formData))
