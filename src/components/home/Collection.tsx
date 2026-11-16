@@ -22,6 +22,7 @@ interface Product {
   tagline: string;
   accentColor: string;
   category: string;
+  collection?: string;
   notes: string[];
   image: string;
   variants: ProductVariant[];
@@ -37,12 +38,17 @@ interface CollectionProps {
   id?: string;
 }
 
-function getStartingPrice(product: Product, currency: "USD" | "ZAR"): { original: number; discounted: number; active: boolean } | null {
+function getStartingPrice(product: Product, currency: "USD" | "ZAR"): { original: number; discounted: number; active: boolean; sizeMl: number } | null {
   if (product.variants.length === 0) return null;
-  const original = Math.min(...product.variants.map(v => currency === "ZAR" ? v.priceZar : v.priceUsd));
+  const cheapest = product.variants.reduce((min, v) => {
+    const price = currency === "ZAR" ? v.priceZar : v.priceUsd;
+    const minPrice = currency === "ZAR" ? min.priceZar : min.priceUsd;
+    return price < minPrice ? v : min;
+  });
+  const original = currency === "ZAR" ? cheapest.priceZar : cheapest.priceUsd;
   const active = isDiscountActive(product);
   const discounted = active ? applyDiscount(original, product.discountPercent!) : original;
-  return { original, discounted, active };
+  return { original, discounted, active, sizeMl: cheapest.sizeMl };
 }
 
 function getProductImage(product: Product) {
@@ -212,16 +218,29 @@ function CollectionCarousel({ products, title, subtitle, id }: CollectionProps) 
                     {(() => {
                       const price = getStartingPrice(product, currency);
                       if (!price) return "—";
-                      if (!price.active) return `From ${formatPrice(price.discounted)}`;
+                      const sizeLabel = `${price.sizeMl}ml · `;
+                      if (!price.active) return `${sizeLabel}From ${formatPrice(price.discounted)}`;
                       return (
                         <>
                           <span className="text-white/30 line-through text-xs sm:text-sm">{formatPrice(price.original)}</span>
-                          <span>From {formatPrice(price.discounted)}</span>
+                          <span>{sizeLabel}From {formatPrice(price.discounted)}</span>
                         </>
                       );
                     })()}
                   </span>
                 </div>
+              </div>
+
+              <div className="absolute top-4 left-4 z-10">
+                <span
+                  className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${
+                    product.collection === "breeze"
+                      ? "bg-sky-400/10 text-sky-300 border-sky-300/40"
+                      : "bg-gold/10 text-gold border-gold/40"
+                  }`}
+                >
+                  {product.collection === "breeze" ? "Breeze" : "Prestige"}
+                </span>
               </div>
 
               {product.discountPercent != null && isDiscountActive(product) && (
